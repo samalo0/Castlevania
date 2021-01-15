@@ -12,3 +12,7 @@ Saved
 *.suo
 *.xcodeproj
 *.xcworkspace
+.idea
+Build
+*.user
+DevelopmentPackage
