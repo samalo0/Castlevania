@@ -63,7 +63,7 @@ void UCastlevaniaGameInstance::InitializeHudWidget(UCastlevaniaUserWidget* Widge
 		HudWidget->SetPlayerHealth(PlayerHealth);
 		HudWidget->SetPlayerLives(PlayerLives);
 		HudWidget->SetScore(Score);
-		HudWidget->SetStage(Stages[Stage].StageNumber);
+		HudWidget->SetStage(Stage + 1);
 		HudWidget->SetWeaponType(WeaponType);
 	}
 	
@@ -108,10 +108,11 @@ void UCastlevaniaGameInstance::SetWeapon(const EWeaponType Type)
 
 #pragma region Stage
 
-void UCastlevaniaGameInstance::GetStageMaximumAndMinimumX(float& Min, float& Max)
+void UCastlevaniaGameInstance::GetCameraSettingsForStage(float& Min, float& Max, FVector& Location)
 {
-	Min = Stages[Stage].MinimumX;
-	Max = Stages[Stage].MaximumX;
+	Min = Stages[Stage].CameraMinAndMaxX.X;
+	Max = Stages[Stage].CameraMinAndMaxX.Y;
+	Location = Stages[Stage].CameraStartingLocation;
 }
 
 void UCastlevaniaGameInstance::LoadNextStage()
@@ -122,7 +123,7 @@ void UCastlevaniaGameInstance::LoadNextStage()
 		Stage = 0;
 	}
 
-	UGameplayStatics::OpenLevel(this, Stages[Stage].StageName);
+	UGameplayStatics::OpenLevel(this, Stages[Stage].LevelName);
 }
 
 void UCastlevaniaGameInstance::ReloadCurrentStage()
@@ -134,7 +135,7 @@ void UCastlevaniaGameInstance::ReloadCurrentStage()
 	Shot = 1;
 	Hearts = 5;
 	
-	UGameplayStatics::OpenLevel(this, Stages[Stage].StageName);
+	UGameplayStatics::OpenLevel(this, Stages[Stage].LevelName);
 }
 
 void UCastlevaniaGameInstance::SetStage(const int32 NewStage)
@@ -142,7 +143,7 @@ void UCastlevaniaGameInstance::SetStage(const int32 NewStage)
 	Stage = NewStage;
 	if(IsValid(HudWidget))
 	{
-		HudWidget->SetStage(Stages[Stage].StageNumber);
+		HudWidget->SetStage(Stage + 1);
 	}
 }
 

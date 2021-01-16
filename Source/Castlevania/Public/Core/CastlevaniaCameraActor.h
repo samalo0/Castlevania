@@ -21,8 +21,6 @@ class CASTLEVANIA_API ACastlevaniaCameraActor : public ACameraActor
 public:
 
 	ACastlevaniaCameraActor();
-
-	bool AnyOverlappingActorsOfClass(TSubclassOf<AActor> Class) const;
 	
 	FORCEINLINE UBoxComponent* GetBoxComponent() const { return BoxComponent; }
 	

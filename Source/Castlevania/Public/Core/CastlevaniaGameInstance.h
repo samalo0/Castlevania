@@ -20,20 +20,17 @@ struct FStage
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	float MaximumX;
-	
+	FVector CameraStartingLocation;
+
 	UPROPERTY(EditAnywhere)
-	float MinimumX;
-	
+	FVector2D CameraMinAndMaxX;
+
 	UPROPERTY(EditAnywhere)
-	int32 StageNumber;
+	FName LevelName;
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* StageMusic;
-	
-	UPROPERTY(EditAnywhere)
-	FName StageName;
-	
+		
 };
 
 class UCastlevaniaUserWidget;
@@ -124,7 +121,7 @@ public:
 
 	FORCEINLINE int32 GetStage() const { return Stage;}
 	
-	void GetStageMaximumAndMinimumX(float& Min, float& Max);
+	void GetCameraSettingsForStage(float& Min, float& Max, FVector& Location);
 	
 	USoundBase* GetStageMusic() { return Stages[Stage].StageMusic; }
 	

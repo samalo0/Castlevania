@@ -28,14 +28,6 @@ ACastlevaniaCameraActor::ACastlevaniaCameraActor()
 	BoxComponent->SetUsingAbsoluteRotation(true);
 }
 
-bool ACastlevaniaCameraActor::AnyOverlappingActorsOfClass(const TSubclassOf<AActor> Class) const
-{
-	TArray<AActor*> OverlappingActors;
-	BoxComponent->GetOverlappingActors(OverlappingActors, Class);
-
-	return OverlappingActors.Num() > 0;
-}
-
 void ACastlevaniaCameraActor::BeginPlay()
 {
 	Super::BeginPlay();
@@ -50,9 +42,9 @@ void ACastlevaniaCameraActor::BeginPlay()
 			Pawn = GameMode->GetPlayerPawn();
 			if(IsValid(Pawn))
 			{
-				GameInstance->GetStageMaximumAndMinimumX(MinimumX, MaximumX);
-				const FVector CurrentLocation = GetActorLocation();
-				SetActorLocation(FVector(MinimumX, CurrentLocation.Y, CurrentLocation.Z));
+				FVector Location;
+				GameInstance->GetCameraSettingsForStage(MinimumX, MaximumX, Location);
+				SetActorLocation(Location);
 
 				SetActorTickEnabled(true);
 			}
