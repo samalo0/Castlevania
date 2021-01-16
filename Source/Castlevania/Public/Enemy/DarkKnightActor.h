@@ -22,5 +22,23 @@ class CASTLEVANIA_API ADarkKnightActor : public AEnemyActor
 public:
 	
 	ADarkKnightActor();
+
+	virtual void Tick(float DeltaSeconds) override;
+	
+protected:
+
+	virtual void HitWithWeapon(int32 Damage, bool bPlaySound) override;
+	
+	float Accumulator = 0.0f;
+
+	// How often to line trace to make sure the knight isn't moving into open space.
+	UPROPERTY(EditDefaultsOnly)
+	float LineTraceInterval = 0.5f;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float MovementSpeed = 25.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ProbabilityOfTurningAround = 0.15f;
 	
 };
