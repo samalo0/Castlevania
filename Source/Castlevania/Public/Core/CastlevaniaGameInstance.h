@@ -103,7 +103,9 @@ protected:
 	int32 Score = 0;
 
 	int32 Shot = 1;
-	
+
+	// The current stage; each level is broken up into stages, which are locations you can start at once you have died.
+	UPROPERTY(EditDefaultsOnly)
 	int32 Stage = 0;
 
 	UPROPERTY(EditDefaultsOnly)

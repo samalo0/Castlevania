@@ -238,6 +238,7 @@ void UCastlevaniaPawnMovementComponent::UpdateStairsMovement(FVector InputVector
 		else if(FMath::IsNearlyEqual(CastlevaniaPawn->GetActorLocation().X, StairsLeftWorldLocation.X, 1.0f) ||
 				(FMath::IsNearlyEqual(CastlevaniaPawn->GetActorLocation().X, StairsRightWorldLocation.X, 1.0f)))
 		{
+			// Force movement from the first step or on the lip of the top step.
 			if(CastlevaniaPawn->GetFacingRightDirection())
 			{
 				InputVector.X = 1.0f;					
