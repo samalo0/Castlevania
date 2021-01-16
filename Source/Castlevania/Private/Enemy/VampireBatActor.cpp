@@ -6,6 +6,7 @@
 
 #include "Enemy/VampireBatActor.h"
 
+#include "Components/BoxComponent.h"
 #include "CastlevaniaGameModeBase.h"
 #include "CastlevaniaPawn.h"
 #include "PaperFlipbookComponent.h"
@@ -15,6 +16,32 @@ AVampireBatActor::AVampireBatActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+
+	TriggerBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBoxComponent"));
+	TriggerBoxComponent->SetupAttachment(GetRootComponent());
+	TriggerBoxComponent->SetCollisionProfileName("OverlapOnlyPawn");
+}
+
+void AVampireBatActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UWorld* World = GetWorld();
+	if(!IsValid(World))
+	{
+		return;
+	}
+
+	if(!bStartHanging)
+	{
+		TriggerBoxComponent->DestroyComponent();
+		SetMovementBasedOnPlayerLocation();
+		SetActorTickEnabled(true);
+	}
+	else
+	{
+		TriggerBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AVampireBatActor::OnTriggerBoxOverlap);
+	}
 }
 
 void AVampireBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
@@ -24,31 +51,38 @@ void AVampireBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
 	Super::HitWithWeapon(Damage, bPlaySound);
 }
 
-void AVampireBatActor::BeginPlay()
+void AVampireBatActor::OnTriggerBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::BeginPlay();
-
-	UWorld* World = GetWorld();
-	if(IsValid(World))
+	ACastlevaniaPawn* Pawn = Cast<ACastlevaniaPawn>(OtherActor);
+	if(IsValid(Pawn))
 	{
-		if(IsValid(GameMode))
-		{
-			Pawn = GameMode->GetPlayerPawn();
-			if(IsValid(Pawn))
-			{
-				if(Pawn->GetActorLocation().X < GetActorLocation().X)
-				{
-					FlipbookComponent->SetWorldScale3D(FVector(-1.0f, 1.0f, 1.0f));
-					MovementSpeed = InitialMovementSpeed * -1.0f;
-				}
-				else
-				{
-					MovementSpeed = InitialMovementSpeed;
-				}
+		TriggerBoxComponent->DestroyComponent();
 		
-				InitialZ = GetActorLocation().Z;
-				SetActorTickEnabled(true);
+		FlipbookComponent->SetFlipbook(FlyingFlipbook);
+		SetMovementBasedOnPlayerLocation();
+		SetActorTickEnabled(true);
+	}
+}
+
+void AVampireBatActor::SetMovementBasedOnPlayerLocation()
+{
+	if(IsValid(GameMode))
+	{
+		ACastlevaniaPawn* Pawn = GameMode->GetPlayerPawn();
+		if(IsValid(Pawn))
+		{
+			if(Pawn->GetActorLocation().X < GetActorLocation().X)
+			{
+				FlipbookComponent->SetWorldScale3D(FVector(-1.0f, 1.0f, 1.0f));
+				MovementSpeed = InitialMovementSpeed * -1.0f;
 			}
+			else
+			{
+				MovementSpeed = InitialMovementSpeed;
+			}
+	
+			InitialZ = GetActorLocation().Z;
 		}
 	}
 }
@@ -56,18 +90,15 @@ void AVampireBatActor::BeginPlay()
 void AVampireBatActor::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	Accumulator += DeltaSeconds;
 	
-	UWorld* World = GetWorld();
-	if(IsValid(World))
-	{
-		const FVector Location = GetActorLocation();
-		const float NewX = Location.X + MovementSpeed * DeltaSeconds;
+	const FVector Location = GetActorLocation();
+	const float NewX = Location.X + MovementSpeed * DeltaSeconds;
+
+	const float NewZ = InitialZ + Amplitude * FMath::Sin(2 * PI * Frequency * Accumulator);
 	
-		const float Time = World->GetTimeSeconds();
-		const float NewZ = InitialZ + Amplitude * FMath::Sin(2 * PI * Frequency * Time);
-		
-		SetActorLocation(FVector(NewX, Location.Y, NewZ));	
-	}
+	SetActorLocation(FVector(NewX, Location.Y, NewZ));	
 }
 
 void AVampireBatActor::TimeStop(const bool bEnable)

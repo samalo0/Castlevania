@@ -53,41 +53,9 @@ protected:
 
 	UFUNCTION()
 	virtual void TimeStop(bool bEnable) {}
-	
-	UPROPERTY(EditDefaultsOnly)
-	UPaperFlipbook* BurnOutFlipbook;
 
-	UPROPERTY(Transient)
-	ACastlevaniaCameraActor* Camera;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TArray<UClass*> ClassesToSpawnOnDestroy;
-
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | General")
 	int32 DamageToPlayer = 2;
-
-	UPROPERTY(Transient)
-	ACastlevaniaGameModeBase* GameMode;
-	
-	UPROPERTY(EditDefaultsOnly)
-	float ProbabilityOfDrop = 0.4f;
-
-	UPROPERTY(EditDefaultsOnly)
-	float ProbabilityOfShotDrop = 0.5f;
-	
-	UPROPERTY(EditDefaultsOnly)
-	USoundBase* HitSound;
-
-	UPROPERTY(EditDefaultsOnly)
-	int32 Score = 100;
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AShotPickupActor> ShotUpgradeClass;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AWhipUpgradeActor> WhipUpgradeClass;
-
-	bool bWasHitWithWhip = false;
 	
 #pragma region Components
 
@@ -98,6 +66,62 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	UPaperFlipbookComponent* FlipbookComponent;
+	
+#pragma endregion
+
+#pragma region Damaged
+
+protected:
+	
+	// Flipbook to play when the enemy is destroyed.
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	UPaperFlipbook* BurnOutFlipbook;
+
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	TArray<UClass*> ClassesToSpawnOnDestroy;
+
+	float HitCooldown = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	float HitCooldownTime = 0.25f;
+	
+	// The amount of damage that the enemy can take before being destroyed.
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	int32 Life = 1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	float ProbabilityOfDrop = 0.4f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	float ProbabilityOfShotDrop = 0.5f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	USoundBase* HitSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	int32 Score = 100;
+
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	TSubclassOf<AShotPickupActor> ShotUpgradeClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	TSubclassOf<AWhipUpgradeActor> WhipUpgradeClass;
+
+	bool bWasHitWithWhip = false;
+	
+#pragma endregion
+
+#pragma region Reference
+
+protected:
+	
+	// Transient reference to the camera.
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "EnemyActor | Reference")
+	ACastlevaniaCameraActor* Camera;
+
+	// Transient reference to the game mode.
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "EnemyActor | Reference")
+	ACastlevaniaGameModeBase* GameMode;
 	
 #pragma endregion
 	

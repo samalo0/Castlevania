@@ -54,28 +54,41 @@ void AEnemyActor::BeginPlay()
 
 void AEnemyActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
 {
-	BoxComponent->OnComponentEndOverlap.Clear();
-	BoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
 	UWorld* World = GetWorld();
-	if(IsValid(World))
+	if(!IsValid(World))
 	{
+		return;
+	}
+
+	if(World->GetTimeSeconds() < HitCooldown)
+	{
+		return;
+	}
+	HitCooldown = World->GetTimeSeconds() + HitCooldownTime;
+	
+	if(bPlaySound)
+	{
+		UGameplayStatics::PlaySound2D(this, HitSound);	
+	}
+
+	Life -= Damage;
+
+	if(Life <= 0)
+	{
+		BoxComponent->OnComponentEndOverlap.Clear();
+		BoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 		UCastlevaniaGameInstance* GameInstance = Cast<UCastlevaniaGameInstance>(World->GetGameInstance());
 		if(IsValid(GameInstance))
 		{
 			GameInstance->AddScore(Score);
 		}
-	}
-
-	if(bPlaySound)
-	{
-		UGameplayStatics::PlaySound2D(this, HitSound);	
-	}
 	
-	FlipbookComponent->SetLooping(false);
-	FlipbookComponent->SetFlipbook(BurnOutFlipbook);
-	FlipbookComponent->OnFinishedPlaying.AddDynamic(this, &AEnemyActor::OnFinishedPlaying);
-	FlipbookComponent->PlayFromStart();
+		FlipbookComponent->SetLooping(false);
+		FlipbookComponent->SetFlipbook(BurnOutFlipbook);
+		FlipbookComponent->OnFinishedPlaying.AddDynamic(this, &AEnemyActor::OnFinishedPlaying);
+		FlipbookComponent->PlayFromStart();		
+	}
 }
 
 void AEnemyActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -62,11 +62,6 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	UPaperFlipbook* FlyingFlipbook;
-
-	float HitCooldown = 0.0f;
-
-	UPROPERTY(EditDefaultsOnly)
-	float HitCooldownTime = 0.25f;
 	
 	bool bLastTowardsPlayer = false;
 	
