@@ -79,7 +79,8 @@ void ADarkKnightActor::Tick(const float DeltaSeconds)
 			return;
 		}
 	}
-	
+
+	// Set new location, if the dark knight did not turn around.
 	FVector Location = GetActorLocation();
 	Location.X += MovementSpeed * FlipbookComponent->GetComponentScale().X * DeltaSeconds;
 	SetActorLocation(Location);

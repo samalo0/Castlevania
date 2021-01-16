@@ -41,6 +41,21 @@ void AEnemyRespawnActor::BeginPlay()
 
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyRespawnActor::OnBoxBeginOverlap);
 
+	// Check for camera overlap on begin play.
+	TArray<AActor*> OverlappingActors;
+	BoxComponent->GetOverlappingActors(OverlappingActors, ACastlevaniaCameraActor::StaticClass());
+	if(OverlappingActors.Num() > 0)
+	{
+		for(AActor* Actor : OverlappingActors)
+		{
+			ACastlevaniaCameraActor* Camera = Cast<ACastlevaniaCameraActor>(Actor);
+			if(IsValid(Camera) && !IsValid(EnemyReference))
+			{
+				SpawnEnemy();
+			}
+		}
+	}
+	
 #if WITH_EDITORONLY_DATA
 	if(FlipbookComponent != nullptr)
 	{
@@ -56,17 +71,22 @@ void AEnemyRespawnActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	ACastlevaniaCameraActor* Camera = Cast<ACastlevaniaCameraActor>(OtherActor);
 	if(IsValid(Camera) && !IsValid(EnemyReference))
 	{
-		UWorld* World = GetWorld();
-		if(IsValid(World))
-		{
-			FActorSpawnParameters SpawnParameters;
-			SpawnParameters.Owner = this;
-			SpawnParameters.ObjectFlags = RF_Transient;
-			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			
-			EnemyReference = World->SpawnActor<AEnemyActor>(EnemyActorClass, GetActorTransform(), SpawnParameters);
-		}
+		SpawnEnemy();
 	}
 }
 
+void AEnemyRespawnActor::SpawnEnemy()
+{
+	UWorld* World = GetWorld();
+	if(!IsValid(World))
+	{
+		return;	
+	}
 
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = this;
+	SpawnParameters.ObjectFlags = RF_Transient;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			
+	EnemyReference = World->SpawnActor<AEnemyActor>(EnemyActorClass, GetActorTransform(), SpawnParameters);
+}
