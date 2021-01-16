@@ -219,7 +219,7 @@ public:
 	
 	void SetCanMoveToStairs(bool bAllow, bool bDownNotUp = false, bool bAscendsFromLeftToRight = true, FVector LeftWorldLocation = FVector::ZeroVector, FVector RightWorldLocation = FVector::ZeroVector);
 
-	void SetForceMoveRight(bool ForceRight) const;
+	void SetForceMove(bool bEnableNotDisable, bool bRightNotLeft) const;
 	
 protected:
 

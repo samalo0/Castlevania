@@ -137,7 +137,7 @@ void UCastlevaniaPawnMovementComponent::UpdateHorizontalMovement(const FVector I
 		}
 		else if(bIsOnGround)
 		{
-			if(!bForceMoveRight)
+			if(!bForceMove)
 			{
 				if((bCanMoveToAscendStairs && InputVector.Z == 1.0f) || (bCanMoveToDescendStairs && InputVector.Z == -1.0f))
 				{
@@ -199,8 +199,16 @@ void UCastlevaniaPawnMovementComponent::UpdateHorizontalMovement(const FVector I
 			}
 			else
 			{
-				Velocity.X = WalkingMaximumVelocity * 1.0f;
-				CastlevaniaPawn->SetFacingDirection(1.0f);
+				if(bForceMoveRight)
+				{
+					Velocity.X = WalkingMaximumVelocity * 1.0f;
+					CastlevaniaPawn->SetFacingDirection(1.0f);	
+				}
+				else
+				{
+					Velocity.X = WalkingMaximumVelocity * -1.0f;
+					CastlevaniaPawn->SetFacingDirection(-1.0f);	
+				}
 			}
 		}		
 	}

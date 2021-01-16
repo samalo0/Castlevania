@@ -590,9 +590,10 @@ void ACastlevaniaPawn::SetCanMoveToStairs(const bool bAllow, const bool bDownNot
 	MovementComponent->StairsRightWorldLocation = RightWorldLocation;
 }
 
-void ACastlevaniaPawn::SetForceMoveRight(const bool ForceRight) const
+void ACastlevaniaPawn::SetForceMove(const bool bEnableNotDisable, const bool bRightNotLeft) const
 {
-	MovementComponent->bForceMoveRight = ForceRight;
+	MovementComponent->bForceMove = bEnableNotDisable;
+	MovementComponent->bForceMoveRight = bRightNotLeft;
 }
 
 void ACastlevaniaPawn::Up(const bool bPressed)

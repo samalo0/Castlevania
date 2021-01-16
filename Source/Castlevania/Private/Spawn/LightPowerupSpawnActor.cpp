@@ -43,9 +43,17 @@ void ALightPowerupSpawnActor::BeginPlay()
 	BoxComponent->GetOverlappingActors(OverlappingActors, ACastlevaniaCameraActor::StaticClass());
 	if(OverlappingActors.Num() > 0)
 	{
-		SetActorTickEnabled(true);
-		FlipbookComponent->SetComponentTickEnabled(true);
-		PointLightComponent->SetVisibility(true);
+		for(AActor* Actor : OverlappingActors)
+		{
+			ACastlevaniaCameraActor* Camera = Cast<ACastlevaniaCameraActor>(Actor);
+			if(IsValid(Camera))
+			{
+				SetActorTickEnabled(true);
+				FlipbookComponent->SetComponentTickEnabled(true);
+				PointLightComponent->SetVisibility(true);
+				break;
+			}
+		}
 	}
 	else
 	{

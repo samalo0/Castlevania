@@ -103,13 +103,13 @@ void ADoorActor::Tick(const float DeltaSeconds)
 
 			// Move character through the open door.
 			CollisionBoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			Pawn->SetForceMoveRight(true);
+			Pawn->SetForceMove(true, GetActorScale3D().X == 1.0f);
 		}
 		break;
 	case EDoorState::Open:
 		if(Pawn->GetActorLocation().X >= NewPawnX)
 		{
-			Pawn->SetForceMoveRight(false);
+			Pawn->SetForceMove(false, false);
 			SpriteComponent->SetSprite(Open1Sprite);
 			State = EDoorState::Closing;
 		}

@@ -43,7 +43,11 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Category = "Movement | General")
 	bool bIsDead = false;
 	
-	// Forces the character to walk to the right.
+	// Forces the character to walk.
+	UPROPERTY(VisibleInstanceOnly, Category = "Movement | General")
+	bool bForceMove = false;
+
+	// Which direction the character is forced to walk, if bForceMove is true.
 	UPROPERTY(VisibleInstanceOnly, Category = "Movement | General")
 	bool bForceMoveRight = false;
 	

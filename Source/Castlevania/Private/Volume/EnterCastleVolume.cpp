@@ -37,7 +37,7 @@ void AEnterCastleVolume::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent
 			if(IsValid(Controller))
 			{
 				Pawn->DisableInput(Controller);	
-				Pawn->SetForceMoveRight(true);
+				Pawn->SetForceMove(true, true);
 				UGameplayStatics::PlaySound2D(this, EnterSound);
 			}
 		}
@@ -80,7 +80,7 @@ void AEnterCastleVolume::OnEndOverlapDelayed()
 			Controller->ClientSetCameraFade(true, FColor::Black, FVector2D(1.0f, 0.0f), CameraFadeTime);
 
 			// Enable control.
-			Pawn->SetForceMoveRight(false);
+			Pawn->SetForceMove(false, false);
 			Pawn->SetActorLocation(NewPawnLocation);
 			Pawn->EnableInput(Controller);
 		}
