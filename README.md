@@ -1,6 +1,6 @@
 # Castlevania
 
-This is a version of Castlevania (the first level currently) using Unreal Engine 4 Paper2D. There is no Blueprint programming, all code is in C++.
+This is a version of the NES classic, Castlevania, using Unreal Engine 4.26. 
 
-See the Youtube series here:
-https://youtu.be/gUZznvRWMZc
+It is a WIP:
+- Currently working on the second level.
