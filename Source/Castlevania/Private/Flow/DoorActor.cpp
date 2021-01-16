@@ -107,7 +107,8 @@ void ADoorActor::Tick(const float DeltaSeconds)
 		}
 		break;
 	case EDoorState::Open:
-		if(Pawn->GetActorLocation().X >= NewPawnX)
+		if((GetActorScale3D().X == 1.0f && Pawn->GetActorLocation().X >= NewPawnX) ||
+			(GetActorScale3D().X == -1.0f && Pawn->GetActorLocation().X <= NewPawnX))
 		{
 			Pawn->SetForceMove(false, false);
 			SpriteComponent->SetSprite(Open1Sprite);
