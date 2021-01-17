@@ -35,6 +35,9 @@ protected:
 	
 	float InterpolationSpeed = 250.0f;
 
+	FVector FloatLocation;
+	FVector IntegerLocation;
+	
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* SpawnSound;
 	

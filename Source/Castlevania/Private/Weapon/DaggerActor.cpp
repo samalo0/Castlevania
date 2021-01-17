@@ -7,9 +7,9 @@
 #include "Weapon/DaggerActor.h"
 
 #include "CastlevaniaCameraActor.h"
+#include "CastlevaniaFunctionLibrary.h"
 #include "EnemyActor.h"
 #include "PaperSpriteComponent.h"
-#include "PowerupSpawnActor.h"
 #include "Kismet/GameplayStatics.h"
 
 ADaggerActor::ADaggerActor()
@@ -33,6 +33,8 @@ void ADaggerActor::BeginPlay()
 	SetActorTickEnabled(true);
 
 	UGameplayStatics::PlaySound2D(this, SpawnSound);
+
+	FloatLocation = GetActorLocation();
 }
 
 void ADaggerActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -49,10 +51,13 @@ void ADaggerActor::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	FVector NewLocation = GetActorLocation();
-	NewLocation.X += DeltaSeconds * InterpolationSpeed;
-
-	SetActorLocation(NewLocation);
+	FloatLocation.X += DeltaSeconds * InterpolationSpeed;
+	IntegerLocation = UCastlevaniaFunctionLibrary::RoundVectorToInt(FloatLocation);
+	
+	if(!GetActorLocation().Equals(IntegerLocation, 0.99f))
+	{
+		SetActorLocation(IntegerLocation);	
+	}
 }
 
 
