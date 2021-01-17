@@ -6,6 +6,7 @@
 
 #include "Pickup/HeartActor.h"
 
+#include "CastlevaniaFunctionLibrary.h"
 #include "CastlevaniaGameInstance.h"
 #include "Pawn/CastlevaniaPawn.h"
 #include "Kismet/GameplayStatics.h"
@@ -43,10 +44,13 @@ void AHeartActor::BeginPlay()
 	const FVector End = GetActorLocation() + FVector(0.0f, 0.0f, -240.0f);
 	if(World->LineTraceSingleByObjectType(OutHit, Start, End, ObjectQueryParams))
 	{
-		DesiredX = GetActorLocation().X;
-		DesiredZ = OutHit.Location.Z + SpriteComponent->GetCollisionShape().GetExtent().Z;
+		DesiredLocation = GetActorLocation();
+		DesiredLocation.Z = OutHit.Location.Z + SpriteComponent->GetCollisionShape().GetExtent().Z;
+		DesiredLocation = UCastlevaniaFunctionLibrary::RoundVectorToInt(DesiredLocation);
 		SetActorTickEnabled(true);
 	}
+
+	LocationFloat = GetActorLocation();
 }
 
 void AHeartActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -73,23 +77,19 @@ void AHeartActor::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	UWorld* World = GetWorld();
-	if(!IsValid(World))
-	{
-		return;
-	}
+	Accumulator += DeltaSeconds;
+	const float XAdder = SineAmplitude * FMath::Sin(2 * PI * SineFrequency * Accumulator);
 
-	const float XAdder = SineAmplitude * FMath::Sin(2 * PI * SineFrequency * World->GetTimeSeconds());
-	const float X = DesiredX + XAdder;
-	
-	const FVector CurrentLocation = GetActorLocation();
+	LocationFloat.X = DesiredLocation.X + XAdder;
+	LocationFloat.Z = FMath::FInterpConstantTo(LocationFloat.Z, DesiredLocation.Z, DeltaSeconds, InterpolationSpeed);
 
-	const float Z = FMath::FInterpConstantTo(CurrentLocation.Z, DesiredZ, DeltaSeconds, InterpolationSpeed);
-	
-	SetActorLocation(FVector(X, CurrentLocation.Y, Z));
-	
-	if(FMath::IsNearlyEqual(Z, DesiredZ, 0.1f))
+	const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 	{
-		SetActorTickEnabled(false);
+		SetActorLocation(LocationInteger);
+		if(FMath::IsNearlyEqual(LocationFloat.Z, DesiredLocation.Z, 0.99f))
+		{
+			SetActorTickEnabled(false);
+		}	
 	}
 }

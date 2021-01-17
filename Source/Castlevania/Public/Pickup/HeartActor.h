@@ -31,12 +31,14 @@ protected:
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	float DesiredX = 0.0f;
-	
-	float DesiredZ = 0.0f;
+	float Accumulator = 0.0f;
+
+	FVector DesiredLocation = FVector::ZeroVector;
 
 	UPROPERTY(EditDefaultsOnly)
 	float InterpolationSpeed = 20.0f;
+
+	FVector LocationFloat = FVector::ZeroVector;
 	
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* PickupSound;

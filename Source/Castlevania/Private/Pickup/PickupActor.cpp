@@ -6,6 +6,8 @@
 
 #include "Pickup/PickupActor.h"
 
+
+#include "CastlevaniaFunctionLibrary.h"
 #include "PaperSpriteComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -44,6 +46,8 @@ void APickupActor::BeginPlay()
 		DesiredZ = static_cast<float>(FMath::RoundToInt(OutHit.Location.Z + SpriteComponent->GetCollisionShape().GetExtent().Z));
 		SetActorTickEnabled(true);
 	}
+
+	LocationFloat = GetActorLocation();
 }
 
 void APickupActor::Tick(const float DeltaSeconds)
@@ -54,17 +58,21 @@ void APickupActor::Tick(const float DeltaSeconds)
 	{
 		return;
 	}
-	const FVector CurrentLocation = GetActorLocation();
-	
+		
 	VelocityZ += GravityAcceleration * DeltaSeconds;
-	float Z = CurrentLocation.Z + VelocityZ * DeltaSeconds;
-	if(Z <= DesiredZ)
+
+	LocationFloat.Z += VelocityZ * DeltaSeconds;
+	if(LocationFloat.Z <= DesiredZ)
 	{
 		bOnGround = true;
-		Z = DesiredZ;
+		LocationFloat.Z = DesiredZ;
 		SetActorTickEnabled(false);
 	}
 		
-	SetActorLocation(FVector(CurrentLocation.X, CurrentLocation.Y, Z));
+	const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+	{
+		SetActorLocation(LocationInteger);	
+	}
 }
 

@@ -50,6 +50,8 @@ void AEnemyActor::BeginPlay()
 			GameMode->OnClockTimeStop.AddDynamic(this, &AEnemyActor::TimeStop);
 		}
 	}
+
+	LocationFloat = GetActorLocation();
 }
 
 void AEnemyActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
@@ -135,14 +137,6 @@ void AEnemyActor::OnFinishedPlaying()
 {
 	SpawnDrop();
 	Destroy();
-}
-
-void AEnemyActor::RoundFlipbookLocation() const
-{
-	FVector RoundedLocation = GetActorLocation();
-	RoundedLocation.X = static_cast<float>(FMath::RoundToInt(RoundedLocation.X));
-	RoundedLocation.Z = static_cast<float>(FMath::RoundToInt(RoundedLocation.Z));
-	FlipbookComponent->SetWorldLocation(RoundedLocation);
 }
 
 void AEnemyActor::SpawnDrop()

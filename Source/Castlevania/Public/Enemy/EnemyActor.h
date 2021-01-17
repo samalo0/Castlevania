@@ -47,8 +47,6 @@ protected:
 	UFUNCTION()
     virtual void OnFinishedPlaying();
 
-	void RoundFlipbookLocation() const;
-
 	void SpawnDrop();
 
 	UFUNCTION()
@@ -56,6 +54,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | General")
 	int32 DamageToPlayer = 2;
+
+	FVector LocationFloat = FVector::ZeroVector;
 	
 #pragma region Components
 

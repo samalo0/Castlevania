@@ -6,6 +6,8 @@
 
 #include "Enemy/VampireBatActor.h"
 
+
+#include "CastlevaniaFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "CastlevaniaGameModeBase.h"
 #include "CastlevaniaPawn.h"
@@ -92,13 +94,15 @@ void AVampireBatActor::Tick(const float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	Accumulator += DeltaSeconds;
-	
-	const FVector Location = GetActorLocation();
-	const float NewX = Location.X + MovementSpeed * DeltaSeconds;
 
-	const float NewZ = InitialZ + Amplitude * FMath::Sin(2 * PI * Frequency * Accumulator);
-	
-	SetActorLocation(FVector(NewX, Location.Y, NewZ));	
+	LocationFloat.X += MovementSpeed * DeltaSeconds;
+	LocationFloat.Z = InitialZ + Amplitude * FMath::Sin(2 * PI * Frequency * Accumulator);
+
+	const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+	{
+		SetActorLocation(LocationInteger);	
+	}
 }
 
 void AVampireBatActor::TimeStop(const bool bEnable)

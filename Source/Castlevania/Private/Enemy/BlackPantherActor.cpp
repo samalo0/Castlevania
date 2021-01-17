@@ -6,6 +6,8 @@
 
 #include "Enemy/BlackPantherActor.h"
 
+
+#include "CastlevaniaFunctionLibrary.h"
 #include "CastlevaniaPawn.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
@@ -80,9 +82,12 @@ void ABlackPantherActor::Tick(const float DeltaSeconds)
 	{
 	case EBlackPantherState::Run:
 		{
-			FVector NewLocation = GetActorLocation();
-			NewLocation.X += MovementSpeed * DeltaSeconds;
-			SetActorLocation(NewLocation);
+			LocationFloat.X += MovementSpeed * DeltaSeconds;
+			const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+			if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+			{
+				SetActorLocation(LocationInteger);	
+			}
 
 			RaycastAccumulator += DeltaSeconds;
 			if(RaycastAccumulator >= RaycastInterval)
@@ -110,46 +115,46 @@ void ABlackPantherActor::Tick(const float DeltaSeconds)
 						JumpVelocity = InitialJumpVelocity * FlipbookComponent->GetComponentScale();
 					}
 				}
-			}
+			}	
 		}
 		break;
 	case EBlackPantherState::Jump:
 		{
 			JumpVelocity.Z += GravityAcceleration * DeltaSeconds;
-
-			FHitResult OutSweepHitResult;
-			SetActorLocation(GetActorLocation() + JumpVelocity * DeltaSeconds, true, &OutSweepHitResult);
-			if(OutSweepHitResult.bBlockingHit)
+			LocationFloat += JumpVelocity * DeltaSeconds;
+			const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+			if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 			{
-				FVector Location = GetActorLocation();
-				Location.Z = static_cast<float>(FMath::RoundToInt(Location.Z));
-				SetActorLocation(Location);
+				FHitResult OutSweepHitResult;
+				SetActorLocation(LocationInteger, true, &OutSweepHitResult);
+				if(OutSweepHitResult.bBlockingHit)
+				{
+					LocationFloat = GetActorLocation();
 				
-				// Set to running.
-				State = EBlackPantherState::Run;
+					// Set to running.
+					State = EBlackPantherState::Run;
 
-				// Flip around.
-				FVector NewScale = FlipbookComponent->GetComponentScale();
-				NewScale.X *= -1;
-				FlipbookComponent->SetWorldScale3D(NewScale);
-				SpriteComponent->SetWorldScale3D(NewScale);
+					// Flip around.
+					FVector NewScale = FlipbookComponent->GetComponentScale();
+					NewScale.X *= -1;
+					FlipbookComponent->SetWorldScale3D(NewScale);
+					SpriteComponent->SetWorldScale3D(NewScale);
 
-				// Setup run speed/direction.
-				MovementSpeed = InitialMovementSpeed * FlipbookComponent->GetComponentScale().X;
-				
-				// Show the flipbook and hide the sprite.
-				FlipbookComponent->SetVisibility(true);
+					// Setup run speed/direction.
+					MovementSpeed = InitialMovementSpeed * FlipbookComponent->GetComponentScale().X;
+			
+					// Show the flipbook and hide the sprite.
+					FlipbookComponent->SetVisibility(true);
 
-				SpriteComponent->SetVisibility(false);
-			}
+					SpriteComponent->SetVisibility(false);
+				}	
+			}	
 		}
 		break;
 	default:
 		SetActorTickEnabled(false);
 		break;
 	}
-
-	RoundFlipbookLocation();
 }
 
 void ABlackPantherActor::TimeStop(const bool bEnable)

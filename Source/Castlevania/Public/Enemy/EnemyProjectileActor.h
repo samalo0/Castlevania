@@ -50,9 +50,11 @@ protected:
 	USoundBase* DestroySound;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float InitialMovementSpeed = 100.0f;
+	float InitialVelocity = 100.0f;
 
-	float MovementSpeed = 0.0f;
+	FVector LocationFloat = FVector::ZeroVector;
+	
+	float Velocity = 0.0f;
 
 #pragma region Components
 

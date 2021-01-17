@@ -99,7 +99,7 @@ void ABoomerangActor::Tick(const float DeltaSeconds)
 	UpdateState(DeltaSeconds);
 
 	LocationFloat.X += Velocity * DeltaSeconds;
-	LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+	const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
 	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 	{
 		SetActorLocation(LocationInteger);	

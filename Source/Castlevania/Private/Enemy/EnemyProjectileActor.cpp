@@ -8,6 +8,7 @@
 
 #include "Components/BoxComponent.h"
 #include "CastlevaniaCameraActor.h"
+#include "CastlevaniaFunctionLibrary.h"
 #include "PaperSpriteComponent.h"
 #include "WeaponActor.h"
 #include "Kismet/GameplayStatics.h"
@@ -33,10 +34,12 @@ void AEnemyProjectileActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MovementSpeed = InitialMovementSpeed * GetActorScale().X;
+	Velocity = InitialVelocity * GetActorScale().X;
 
 	SpriteComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyProjectileActor::OnBeginOverlap);
 	SpriteComponent->OnComponentEndOverlap.AddDynamic(this, &AEnemyProjectileActor::OnEndOverlap);
+
+	LocationFloat = GetActorLocation();
 	
 	SetActorTickEnabled(true);
 }
@@ -96,6 +99,11 @@ void AEnemyProjectileActor::OnFinishedPlaying()
 
 void AEnemyProjectileActor::Tick(const float DeltaSeconds)
 {
-	const FVector NewLocation = GetActorLocation() + FVector(MovementSpeed * DeltaSeconds, 0.0f, 0.0f);
-	SetActorLocation(NewLocation);
+	LocationFloat.X += Velocity * DeltaSeconds;
+	const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+	{
+		SetActorLocation(LocationInteger);	
+	}
 }

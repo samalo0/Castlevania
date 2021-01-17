@@ -50,7 +50,7 @@ void ADaggerActor::Tick(const float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	LocationFloat.X += DeltaSeconds * InterpolationSpeed;
-	LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+	const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
 	
 	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 	{

@@ -6,6 +6,8 @@
 
 #include "Enemy/FishManActor.h"
 
+
+#include "CastlevaniaFunctionLibrary.h"
 #include "CastlevaniaGameModeBase.h"
 #include "CastlevaniaPawn.h"
 #include "FireBallActor.h"
@@ -71,9 +73,12 @@ void AFishManActor::Tick(const float DeltaSeconds)
 		{
 			Velocity.Z += GravityAcceleration * DeltaSeconds;
 
-			FVector Location = GetActorLocation();
-			Location += Velocity * DeltaSeconds;
-			SetActorLocation(Location);
+			LocationFloat += Velocity * DeltaSeconds;
+			const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+			if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+			{
+				SetActorLocation(LocationInteger);	
+			}
 
 			if(Velocity.Z < 0.0f)
 			{
@@ -87,48 +92,52 @@ void AFishManActor::Tick(const float DeltaSeconds)
 		{
 			Velocity.Z += GravityAcceleration * DeltaSeconds;
 
-			FVector Location = GetActorLocation();
-			Location += Velocity * DeltaSeconds;
-
-			FHitResult OutSweepHitResult;
-			if(!SetActorLocation(Location, true, &OutSweepHitResult))
+			LocationFloat += Velocity * DeltaSeconds;
+			const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+			if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 			{
-				State = EFishManState::Walking;
-
-				UGameplayStatics::PlaySound2D(this, LandSound);
-
-				if(IsValid(Pawn))
+				FHitResult OutSweepHitResult;
+				if(!SetActorLocation(LocationInteger, true, &OutSweepHitResult))
 				{
-					bool bOnRight = GetActorLocation().X > Pawn->GetActorLocation().X; 
-					if(bOnRight)
+					State = EFishManState::Walking;
+
+					UGameplayStatics::PlaySound2D(this, LandSound);
+
+					if(IsValid(Pawn))
 					{
-						FlipbookComponent->SetWorldScale3D(FVector(-1.0f, 1.0f, 1.0f));
+						bool bOnRight = GetActorLocation().X > Pawn->GetActorLocation().X; 
+						if(bOnRight)
+						{
+							FlipbookComponent->SetWorldScale3D(FVector(-1.0f, 1.0f, 1.0f));
+						}
+						else
+						{
+							FlipbookComponent->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+						}
 					}
-					else
-					{
-						FlipbookComponent->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
-					}
+				
+					Velocity.Z = 0.0f;
+					Velocity.X = WalkSpeed * FlipbookComponent->GetComponentScale().X;
+				
+					AttackTime = FMath::FRandRange(MinimumAttackTime, MaximumAttackTime);
 				}
-				
-				Velocity.Z = 0.0f;
-				Velocity.X = WalkSpeed * FlipbookComponent->GetComponentScale().X;
-				
-				AttackTime = FMath::FRandRange(MinimumAttackTime, MaximumAttackTime);
 			}
 		}
 		break;
 	case EFishManState::Walking:
 		{
-			FVector Location = GetActorLocation();
-
-			Location.X += Velocity.X * DeltaSeconds;
-			FHitResult WalkSweepHitResult;
-			if(!SetActorLocation(Location, true, &WalkSweepHitResult))
+			LocationFloat.X += Velocity.X * DeltaSeconds;
+			const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+			if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 			{
-				FVector Scale = FlipbookComponent->GetComponentScale();
-				Scale.X *= -1.0f;
-				FlipbookComponent->SetWorldScale3D(Scale);
-				Velocity.X = WalkSpeed * FlipbookComponent->GetComponentScale().X;
+				FHitResult WalkSweepHitResult;
+				if(!SetActorLocation(LocationInteger, true, &WalkSweepHitResult))
+				{
+					FVector Scale = FlipbookComponent->GetComponentScale();
+					Scale.X *= -1.0f;
+					FlipbookComponent->SetWorldScale3D(Scale);
+					Velocity.X = WalkSpeed * FlipbookComponent->GetComponentScale().X;
+				}
 			}
 
 			RaycastAccumulator += DeltaSeconds;
@@ -208,15 +217,15 @@ void AFishManActor::Tick(const float DeltaSeconds)
 		{
 			Velocity.Z += GravityAcceleration * DeltaSeconds;
 
-			FVector Location = GetActorLocation();
-			Location += Velocity * DeltaSeconds;
-
-			SetActorLocation(Location);
+			LocationFloat += Velocity * DeltaSeconds;
+			const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+			if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+			{
+				SetActorLocation(LocationInteger);	
+			}
 		}
 		break;
 	}
-
-	RoundFlipbookLocation();
 }
 
 void AFishManActor::TimeStop(const bool bEnable)

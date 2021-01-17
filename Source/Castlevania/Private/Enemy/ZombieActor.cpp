@@ -6,6 +6,7 @@
 
 #include "Enemy/ZombieActor.h"
 
+#include "CastlevaniaFunctionLibrary.h"
 #include "PaperFlipbookComponent.h"
 
 AZombieActor::AZombieActor()
@@ -32,13 +33,13 @@ void AZombieActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
 void AZombieActor::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
-	FVector NewLocation = GetActorLocation();
-	NewLocation.X += MovementSpeed * DeltaSeconds;
 
-	SetActorLocation(NewLocation);
-
-	RoundFlipbookLocation();
+	LocationFloat.X += MovementSpeed * DeltaSeconds;
+	const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);	
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+	{
+		SetActorLocation(LocationInteger);	
+	}
 }
 
 void AZombieActor::TimeStop(const bool bEnable)

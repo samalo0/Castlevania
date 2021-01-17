@@ -33,11 +33,13 @@ protected:
 	
 	float DesiredZ = 0.0f;
 
-	bool bOnGround = false;
-	
 	// Gravity acceleration, in pixels per second squared.
 	UPROPERTY(EditDefaultsOnly)
 	float GravityAcceleration = -480.0f;
+
+	FVector LocationFloat = FVector::ZeroVector;
+	
+	bool bOnGround = false;
 	
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* PickupSound;

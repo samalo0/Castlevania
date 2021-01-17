@@ -70,7 +70,7 @@ void AHolyWaterActor::Tick(const float DeltaSeconds)
 	Velocity.Z += GravityAcceleration * DeltaSeconds;
 
 	LocationFloat += Velocity * DeltaSeconds;
-	LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+	const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
 
 	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 	{

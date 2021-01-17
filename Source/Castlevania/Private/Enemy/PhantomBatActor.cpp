@@ -7,6 +7,7 @@
 #include "Enemy/PhantomBatActor.h"
 
 #include "CastlevaniaCameraActor.h"
+#include "CastlevaniaFunctionLibrary.h"
 #include "CastlevaniaGameInstance.h"
 #include "CastlevaniaGameModeBase.h"
 #include "CastlevaniaPawn.h"
@@ -131,18 +132,22 @@ void APhantomBatActor::Tick(const float DeltaSeconds)
 		if(IsValid(Camera))
 		{
 			const FVector CameraLocation = Camera->GetActorLocation();
-			Destination = FVector(CameraLocation.X, GetActorLocation().Y, CameraLocation.Z);
+			Destination = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(CameraLocation.X, GetActorLocation().Y, CameraLocation.Z));
 		}
 		break;
 	case EPhantomBatState::MoveToDestination:
 		{
-			const FVector NewLocation = FMath::VInterpConstantTo(GetActorLocation(), Destination, DeltaSeconds, MovementSpeed);
-			SetActorLocation(NewLocation);
-
-			if(NewLocation.Equals(Destination, 0.1f))
+			LocationFloat = FMath::VInterpConstantTo(GetActorLocation(), Destination, DeltaSeconds, MovementSpeed);
+			const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+			if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 			{
-				State = EPhantomBatState::WaitRandomTime;
-				WaitTime = FMath::FRandRange(MinimumWaitTime, MaximumWaitTime);
+				SetActorLocation(LocationInteger);
+
+				if(LocationInteger.Equals(Destination, 0.99f))
+				{
+					State = EPhantomBatState::WaitRandomTime;
+					WaitTime = FMath::FRandRange(MinimumWaitTime, MaximumWaitTime);
+				}				
 			}
 		}
 		break;
@@ -192,7 +197,7 @@ void APhantomBatActor::Tick(const float DeltaSeconds)
 			}
 			const float AdderZ = FMath::FRandRange(-32.0f, 32.0f);
 
-			Destination = FVector(CameraLocation.X + AdderX, GetActorLocation().Y, CameraLocation.Z + AdderZ);
+			Destination = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(CameraLocation.X + AdderX, GetActorLocation().Y, CameraLocation.Z + AdderZ));
 			
 			State = EPhantomBatState::MoveToDestination;
 		}
@@ -200,8 +205,6 @@ void APhantomBatActor::Tick(const float DeltaSeconds)
 	default:
 		break;
 	}
-
-	RoundFlipbookLocation();
 }
 
 void APhantomBatActor::TimeStop(const bool bEnable)

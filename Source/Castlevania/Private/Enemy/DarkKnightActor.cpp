@@ -6,6 +6,8 @@
 
 #include "Enemy/DarkKnightActor.h"
 
+
+#include "CastlevaniaFunctionLibrary.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
 
@@ -39,6 +41,7 @@ void ADarkKnightActor::Tick(const float DeltaSeconds)
 	{
 		Accumulator = 0.0f;
 
+		// Check for walking into air.
 		UWorld* World = GetWorld();
 		if(IsValid(World))
 		{
@@ -56,6 +59,7 @@ void ADarkKnightActor::Tick(const float DeltaSeconds)
 			}
 		}
 
+		// Check for walking into an object.
 		if(IsValid(World))
 		{
 			const FVector Start = GetActorLocation() + FVector(BoxComponent->GetScaledBoxExtent().X * FlipbookComponent->GetComponentScale().X, 0.0f, 0.0f);
@@ -72,6 +76,7 @@ void ADarkKnightActor::Tick(const float DeltaSeconds)
 			}
 		}
 
+		// Check for randomly turning around.
 		float TurnAround = FMath::FRandRange(0.0f, 1.0f);
 		if(TurnAround <= ProbabilityOfTurningAround)
 		{
@@ -81,8 +86,11 @@ void ADarkKnightActor::Tick(const float DeltaSeconds)
 	}
 
 	// Set new location, if the dark knight did not turn around.
-	FVector Location = GetActorLocation();
-	Location.X += MovementSpeed * FlipbookComponent->GetComponentScale().X * DeltaSeconds;
-	SetActorLocation(Location);
+	LocationFloat.X += MovementSpeed * FlipbookComponent->GetComponentScale().X * DeltaSeconds; 
+	const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+	{
+		SetActorLocation(LocationInteger);
+	}
 }
 
