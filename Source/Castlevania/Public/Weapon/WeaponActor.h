@@ -26,11 +26,19 @@ public:
 	
 protected:
 
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(Transient)
 	ABonusPointsEffectActor* BonusPointsEffectActor;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ABonusPointsEffectActor> BonusPointsEffectClass;
+
+	// Float location used for interpolation; to prevent moving the actor until it's moved a full pixel.
+	FVector LocationFloat = FVector::ZeroVector;
+
+	// Integer location used for interpolation; this is used to only move the actor in pixel increments.
+	FVector LocationInteger = FVector::ZeroVector;
 	
 	int32 NumberOfEnemiesKilled = 0;
 	

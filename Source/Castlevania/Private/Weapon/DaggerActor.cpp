@@ -33,8 +33,6 @@ void ADaggerActor::BeginPlay()
 	SetActorTickEnabled(true);
 
 	UGameplayStatics::PlaySound2D(this, SpawnSound);
-
-	FloatLocation = GetActorLocation();
 }
 
 void ADaggerActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -51,13 +49,11 @@ void ADaggerActor::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	FloatLocation.X += DeltaSeconds * InterpolationSpeed;
-	IntegerLocation = UCastlevaniaFunctionLibrary::RoundVectorToInt(FloatLocation);
+	LocationFloat.X += DeltaSeconds * InterpolationSpeed;
+	LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
 	
-	if(!GetActorLocation().Equals(IntegerLocation, 0.99f))
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 	{
-		SetActorLocation(IntegerLocation);	
+		SetActorLocation(LocationInteger);	
 	}
 }
-
-

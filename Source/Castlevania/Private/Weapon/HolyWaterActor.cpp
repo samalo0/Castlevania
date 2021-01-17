@@ -8,6 +8,7 @@
 
 #include "Components/BoxComponent.h"
 #include "CastlevaniaCameraActor.h"
+#include "CastlevaniaFunctionLibrary.h"
 #include "PaperFlipbookComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -68,26 +69,24 @@ void AHolyWaterActor::Tick(const float DeltaSeconds)
 
 	Velocity.Z += GravityAcceleration * DeltaSeconds;
 
-	const FVector NewLocation = GetActorLocation() + Velocity * DeltaSeconds;
+	LocationFloat += Velocity * DeltaSeconds;
+	LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
 
-	FHitResult OutSweepHitResult;
-	if(!SetActorLocation(NewLocation, true, &OutSweepHitResult))
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 	{
-		BoxComponent->SetBoxExtent(FVector(8.0f, 10.0f, 8.0f));
+		FHitResult OutSweepHitResult;
+		if(!SetActorLocation(LocationInteger, true, &OutSweepHitResult))
+		{
+			BoxComponent->SetBoxExtent(FVector(8.0f, 10.0f, 8.0f));
 
-		SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 4.0f));
+			SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 4.0f));
 		
-		FlipbookComponent->SetFlipbook(BurnFlipbook);
-		FlipbookComponent->OnFinishedPlaying.AddDynamic(this, &AHolyWaterActor::OnFinishedPlaying);
-		FlipbookComponent->PlayFromStart();
-		SetActorTickEnabled(false);
+			FlipbookComponent->SetFlipbook(BurnFlipbook);
+			FlipbookComponent->OnFinishedPlaying.AddDynamic(this, &AHolyWaterActor::OnFinishedPlaying);
+			FlipbookComponent->PlayFromStart();
+			SetActorTickEnabled(false);
 
-		UGameplayStatics::PlaySound2D(this, BurnSound);
+			UGameplayStatics::PlaySound2D(this, BurnSound);
+		}	
 	}
-
-	// Round flipbook location to the nearest pixel.
-	FVector RoundLocation = GetActorLocation();
-	RoundLocation.X = static_cast<float>(FMath::RoundToInt(RoundLocation.X));
-	RoundLocation.Z = static_cast<float>(FMath::RoundToInt(RoundLocation.Z));
-	FlipbookComponent->SetWorldLocation(RoundLocation);
 }

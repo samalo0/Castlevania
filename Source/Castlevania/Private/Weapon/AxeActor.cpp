@@ -7,6 +7,7 @@
 #include "Weapon/AxeActor.h"
 
 #include "CastlevaniaCameraActor.h"
+#include "CastlevaniaFunctionLibrary.h"
 #include "EnemyActor.h"
 #include "Components/BoxComponent.h"
 #include "PaperFlipbookComponent.h"
@@ -70,13 +71,12 @@ void AAxeActor::Tick(const float DeltaSeconds)
 
 	Velocity.Z += GravityAcceleration * DeltaSeconds;
 
-	const FVector NewLocation = GetActorLocation() + Velocity * DeltaSeconds;
-	SetActorLocation(NewLocation);
+	LocationFloat = LocationFloat + Velocity * DeltaSeconds;
+	LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
 
-	// Round flipbook location to the nearest pixel.
-	FVector RoundLocation = NewLocation;
-	RoundLocation.X = static_cast<float>(FMath::RoundToInt(RoundLocation.X));
-	RoundLocation.Z = static_cast<float>(FMath::RoundToInt(RoundLocation.Z));
-	FlipbookComponent->SetWorldLocation(RoundLocation);
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+	{
+		SetActorLocation(LocationInteger);	
+	}
 }
 

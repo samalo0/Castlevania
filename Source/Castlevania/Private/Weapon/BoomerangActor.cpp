@@ -7,6 +7,7 @@
 #include "Weapon/BoomerangActor.h"
 
 #include "CastlevaniaCameraActor.h"
+#include "CastlevaniaFunctionLibrary.h"
 #include "CastlevaniaGameModeBase.h"
 #include "EnemyActor.h"
 #include "Components/BoxComponent.h"
@@ -58,13 +59,13 @@ void ABoomerangActor::BeginPlay()
 	{
 		State = EBoomerangState::StartGoingRight;	
 		DesiredX = CurrentLocation.X + Range;
-		InterpolationSpeed = InitialInterpolationSpeed;
+		Velocity = InitialInterpolationSpeed;
 	}
 	else
 	{
 		State = EBoomerangState::StartGoingLeft;
 		DesiredX = CurrentLocation.X - Range;
-		InterpolationSpeed = -1.0f * InitialInterpolationSpeed;
+		Velocity = -1.0f * InitialInterpolationSpeed;
 	}
 
 	AudioComponent->Activate();
@@ -94,7 +95,19 @@ void ABoomerangActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 void ABoomerangActor::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	
+	UpdateState(DeltaSeconds);
 
+	LocationFloat.X += Velocity * DeltaSeconds;
+	LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+	{
+		SetActorLocation(LocationInteger);	
+	}
+}
+
+void ABoomerangActor::UpdateState(const float DeltaSeconds)
+{
 	const FVector CameraViewport = Camera->GetCameraViewportExtent();
 	const float CameraMaxX = Camera->GetActorLocation().X + CameraViewport.X - 32.0f;
 	const float CameraMinX = Camera->GetActorLocation().X - CameraViewport.X + 32.0f;
@@ -102,95 +115,58 @@ void ABoomerangActor::Tick(const float DeltaSeconds)
 	switch(State)
 	{
 	case EBoomerangState::StartGoingRight:
+		if(LocationFloat.X >= DesiredX || LocationFloat.X >= CameraMaxX)
 		{
-			const FVector NewLocation = GetActorLocation() + FVector(InterpolationSpeed * DeltaSeconds, 0.0f, 0.0f);
-			SetActorLocation(NewLocation);
-			if(NewLocation.X >= DesiredX || NewLocation.X >= CameraMaxX)
-			{
-				State = EBoomerangState::SlowingDownRight;
-			}
+			State = EBoomerangState::SlowingDownRight;
 		}
 		break;
 	case EBoomerangState::SlowingDownRight:
+		Velocity += TurnAroundAcceleration * DeltaSeconds;
+
+		if(Velocity <= 0.0f)
 		{
-			InterpolationSpeed += TurnAroundAcceleration * DeltaSeconds;
-			const FVector NewLocation = GetActorLocation() + FVector(InterpolationSpeed * DeltaSeconds, 0.0f, 0.0f);
-			SetActorLocation(NewLocation);
-			if(InterpolationSpeed <= 0.0f)
-			{
-				SetActorScale3D(FVector(-1.0f, 1.0f, 1.0f));
-				State = EBoomerangState::SpeedingUpLeft;
-			}
+			SetActorScale3D(FVector(-1.0f, 1.0f, 1.0f));
+			State = EBoomerangState::SpeedingUpLeft;
 		}
 		break;
 	case EBoomerangState::SpeedingUpLeft:
+		Velocity += TurnAroundAcceleration * DeltaSeconds;
+		if(Velocity <= (InitialInterpolationSpeed * -1.0f))
 		{
-			InterpolationSpeed += TurnAroundAcceleration * DeltaSeconds;
-			const FVector NewLocation = GetActorLocation() + FVector(InterpolationSpeed * DeltaSeconds, 0.0f, 0.0f);
-			SetActorLocation(NewLocation);
-			if(InterpolationSpeed <= (InitialInterpolationSpeed * -1.0f))
-			{
-				InterpolationSpeed = InitialInterpolationSpeed * -1.0f;
-				State = EBoomerangState::FinalGoingLeft;
-			}
+			Velocity = InitialInterpolationSpeed * -1.0f;
+			State = EBoomerangState::FinalGoingLeft;
 		}
 		break;
 	case EBoomerangState::FinalGoingLeft:
-		{
-			const FVector NewLocation = GetActorLocation() + FVector(InterpolationSpeed * DeltaSeconds, 0.0f, 0.0f);
-			SetActorLocation(NewLocation);
-		}
 		break;
 	case EBoomerangState::StartGoingLeft:
+		if(LocationFloat.X <= DesiredX || LocationFloat.X <= CameraMinX)
 		{
-			const FVector NewLocation = GetActorLocation() + FVector(InterpolationSpeed * DeltaSeconds, 0.0f, 0.0f);
-			SetActorLocation(NewLocation);
-			if(NewLocation.X <= DesiredX || NewLocation.X <= CameraMinX)
-			{
-				State = EBoomerangState::SlowingDownLeft;
-			}
+			State = EBoomerangState::SlowingDownLeft;
 		}
 		break;
 	case EBoomerangState::SlowingDownLeft:
+		Velocity -= TurnAroundAcceleration * DeltaSeconds;
+
+		if(Velocity >= 0.0f)
 		{
-			InterpolationSpeed -= TurnAroundAcceleration * DeltaSeconds;
-			const FVector NewLocation = GetActorLocation() + FVector(InterpolationSpeed * DeltaSeconds, 0.0f, 0.0f);
-			SetActorLocation(NewLocation);
-			if(InterpolationSpeed >= 0.0f)
-			{
-				SetActorScale3D(FVector(1.0f, 1.0f, 1.0f));
-				State = EBoomerangState::SpeedingUpRight;
-			}
+			SetActorScale3D(FVector(1.0f, 1.0f, 1.0f));
+			State = EBoomerangState::SpeedingUpRight;
 		}
 		break;
 	case EBoomerangState::SpeedingUpRight:
+		Velocity -= TurnAroundAcceleration * DeltaSeconds;
+
+		if(Velocity >= InitialInterpolationSpeed)
 		{
-			InterpolationSpeed -= TurnAroundAcceleration * DeltaSeconds;
-			const FVector NewLocation = GetActorLocation() + FVector(InterpolationSpeed * DeltaSeconds, 0.0f, 0.0f);
-			SetActorLocation(NewLocation);
-			if(InterpolationSpeed >= InitialInterpolationSpeed)
-			{
-				InterpolationSpeed = InitialInterpolationSpeed;
-				State = EBoomerangState::FinalGoingRight;
-			}
+			Velocity = InitialInterpolationSpeed;
+			State = EBoomerangState::FinalGoingRight;
 		}
 		break;		
 	case EBoomerangState::FinalGoingRight:
-		{
-			const FVector NewLocation = GetActorLocation() + FVector(InterpolationSpeed * DeltaSeconds, 0.0f, 0.0f);
-			SetActorLocation(NewLocation);
-		}		
 		break;
 	default:
 		SetActorTickEnabled(false);
 		break;
-	}	
-
-	
-	
-	// Round flipbook location to the nearest pixel, for authenticity.
-	FVector RoundLocation = GetActorLocation();
-	RoundLocation.X = static_cast<float>(FMath::RoundToInt(RoundLocation.X));
-	RoundLocation.Z = static_cast<float>(FMath::RoundToInt(RoundLocation.Z));
-	FlipbookComponent->SetWorldLocation(RoundLocation);
+	}
 }

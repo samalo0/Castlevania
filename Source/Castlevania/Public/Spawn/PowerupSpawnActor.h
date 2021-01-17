@@ -17,7 +17,7 @@ class AWhipUpgradeActor;
 class UBoxComponent;
 class UPointLightComponent;
 
-UCLASS()
+UCLASS(HideCategories = (Replication, Rendering, Actor, Input, LOD, Cooking))
 class CASTLEVANIA_API APowerupSpawnActor : public AActor
 {
 

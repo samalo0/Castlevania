@@ -9,6 +9,13 @@
 #include "BonusPointsEffectActor.h"
 #include "CastlevaniaGameInstance.h"
 
+void AWeaponActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	LocationFloat = GetActorLocation();
+}
+
 void AWeaponActor::Hit()
 {
 	UWorld* World = GetWorld();

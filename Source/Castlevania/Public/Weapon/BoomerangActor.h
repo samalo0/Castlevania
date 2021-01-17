@@ -52,15 +52,15 @@ protected:
 	UFUNCTION()
     void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	void UpdateState(const float DeltaSeconds);
+	
 	UPROPERTY(Transient)
 	ACastlevaniaCameraActor* Camera;
 
 	float DesiredX = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float InitialInterpolationSpeed = 100.0f;
-	
-	float InterpolationSpeed = 100.0f;
+	float InitialInterpolationSpeed = 128.0f;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float Range = 96.0f;
@@ -69,7 +69,9 @@ protected:
 	EBoomerangState State = EBoomerangState::Idle;
 
 	UPROPERTY(EditDefaultsOnly)
-	float TurnAroundAcceleration = -2.0 * 100.0f;
+	float TurnAroundAcceleration = -256.0f;
+
+	float Velocity = 100.0f;
 	
 #pragma region Components
 

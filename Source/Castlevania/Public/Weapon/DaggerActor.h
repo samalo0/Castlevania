@@ -34,9 +34,6 @@ protected:
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
 	float InterpolationSpeed = 250.0f;
-
-	FVector FloatLocation;
-	FVector IntegerLocation;
 	
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* SpawnSound;
