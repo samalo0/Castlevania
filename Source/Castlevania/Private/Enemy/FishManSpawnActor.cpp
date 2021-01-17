@@ -9,7 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SplashEffectActor.h"
 
-void AFishManSpawnActor::SpawnEnemy(const FTransform RelativeTransform)
+void AFishManSpawnActor::SpawnEnemy(const FTransform Transform)
 {
 	UWorld* World = GetWorld();
 	if(!IsValid(World))
@@ -18,7 +18,7 @@ void AFishManSpawnActor::SpawnEnemy(const FTransform RelativeTransform)
 	}
 
 	UGameplayStatics::PlaySound2D(this, SplashSound);
-
+		
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;
 	SpawnParameters.ObjectFlags = RF_Transient;
@@ -26,8 +26,8 @@ void AFishManSpawnActor::SpawnEnemy(const FTransform RelativeTransform)
 
 	for(int32 Index = 0; Index < 3; Index++)
 	{
-		World->SpawnActor<ASplashEffectActor>(SplashEffectClass, RelativeTransform * GetActorTransform(), SpawnParameters);	
+		World->SpawnActor<ASplashEffectActor>(SplashEffectClass, Transform, SpawnParameters);	
 	}
 
-	Super::SpawnEnemy(RelativeTransform);
+	Super::SpawnEnemy(Transform);
 }

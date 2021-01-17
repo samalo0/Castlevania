@@ -59,6 +59,15 @@ FVector ACastlevaniaCameraActor::GetCameraViewportExtent() const
 	return BoxComponent->GetScaledBoxExtent();
 }
 
+bool ACastlevaniaCameraActor::IsLocationInViewport(const FVector Location) const
+{
+	const FVector ViewportExtent = BoxComponent->GetScaledBoxExtent();
+	const FVector ViewportLocation = BoxComponent->GetComponentLocation();
+
+	return (Location.X <= ViewportLocation.X + ViewportExtent.X && Location.X >= ViewportLocation.X - ViewportExtent.X &&
+		Location.Z <= ViewportLocation.Z + ViewportExtent.Z && Location.Z >= ViewportLocation.Z - ViewportExtent.Z);
+}
+
 void ACastlevaniaCameraActor::SetMinimumAndMaximumX(const float MinX, const float MaxX)
 {
 	MinimumX = MinX;

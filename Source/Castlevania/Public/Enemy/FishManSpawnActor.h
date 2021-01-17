@@ -19,7 +19,7 @@ class CASTLEVANIA_API AFishManSpawnActor : public AEnemySpawnActor
 
 protected:
 
-	virtual void SpawnEnemy(FTransform RelativeTransform) override;
+	virtual void SpawnEnemy(FTransform Transform) override;
 	
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* SplashSound;

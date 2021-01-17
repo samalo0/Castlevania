@@ -7,6 +7,7 @@
 #include "Effect/SplashEffectActor.h"
 
 #include "CastlevaniaCameraActor.h"
+#include "CastlevaniaFunctionLibrary.h"
 #include "PaperSpriteComponent.h"
 
 ASplashEffectActor::ASplashEffectActor()
@@ -29,6 +30,8 @@ void ASplashEffectActor::BeginPlay()
 	const float Z = FMath::FRandRange(InitialVelocityZ / 2.0f, InitialVelocityZ);
 	Velocity = FVector(X, 0.0f, Z);
 
+	LocationFloat = GetActorLocation();
+	
 	SetActorTickEnabled(true);
 }
 
@@ -48,7 +51,11 @@ void ASplashEffectActor::Tick(const float DeltaSeconds)
 
 	Velocity.Z += GravityAcceleration * DeltaSeconds;
 
-	const FVector NewLocation = GetActorLocation() + Velocity * DeltaSeconds;
-	SetActorLocation(NewLocation);
+	LocationFloat += Velocity * DeltaSeconds;
+	const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
+	if(!GetActorLocation().Equals(LocationInteger, 0.99f))
+	{
+		SetActorLocation(LocationInteger);	
+	}
 }
 

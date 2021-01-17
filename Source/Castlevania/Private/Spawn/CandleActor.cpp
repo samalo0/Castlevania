@@ -10,5 +10,5 @@ ACandleActor::ACandleActor()
 {
 	SpawnOffset = FVector::ZeroVector;
 	MinimumLight = 0.05f;
-	MaximumLight = 0.50f;
+	MaximumLight = 0.20f;
 }

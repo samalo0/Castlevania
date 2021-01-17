@@ -75,8 +75,7 @@ void AEnemySpawnActor::BeginPlay()
 void AEnemySpawnActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ACastlevaniaCameraActor* Camera = Cast<ACastlevaniaCameraActor>(OtherActor);
-	if(IsValid(Camera))
+	if(CameraActor == OtherActor)
 	{
 		UWorld* World = GetWorld();
 		if(IsValid(World))
@@ -93,8 +92,7 @@ void AEnemySpawnActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponen
 void AEnemySpawnActor::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	ACastlevaniaCameraActor* Camera = Cast<ACastlevaniaCameraActor>(OtherActor);
-	if(IsValid(Camera))
+	if(CameraActor == OtherActor)
 	{
 		UWorld* World = GetWorld();
 		if(IsValid(World))
@@ -153,11 +151,18 @@ void AEnemySpawnActor::OnSpawnDurationElapsed()
 		return;
 	}
 
-	const int32 RandomLocation = FMath::RandRange(0, SpawnRelativeTransforms.Num() - 1);	
-	SpawnEnemy(SpawnRelativeTransforms[RandomLocation]);
+	const int32 RandomTransformIndex = FMath::RandRange(0, SpawnRelativeTransforms.Num() - 1);	
+	const FTransform RandomTransform = SpawnRelativeTransforms[RandomTransformIndex] * GetActorTransform();
+	
+	if(!bAllowSpawnIfLocationIsOffscreen && !CameraActor->IsLocationInViewport(RandomTransform.GetLocation()))
+	{
+		return;
+	}
+		
+	SpawnEnemy(RandomTransform);
 }
 
-void AEnemySpawnActor::SpawnEnemy(const FTransform RelativeTransform)
+void AEnemySpawnActor::SpawnEnemy(const FTransform Transform)
 {
 	UWorld* World = GetWorld();
 	if(!IsValid(World))
@@ -171,7 +176,7 @@ void AEnemySpawnActor::SpawnEnemy(const FTransform RelativeTransform)
 	SpawnParameters.ObjectFlags = RF_Transient;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	AEnemyActor* Actor = World->SpawnActor<AEnemyActor>(EnemyClassToSpawn, RelativeTransform * GetActorTransform(), SpawnParameters);
+	AEnemyActor* Actor = World->SpawnActor<AEnemyActor>(EnemyClassToSpawn, Transform, SpawnParameters);
 	if(IsValid(Actor))
 	{
 		SpawnedActors.Add(Actor);

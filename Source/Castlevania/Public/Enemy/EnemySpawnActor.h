@@ -24,11 +24,11 @@ class CASTLEVANIA_API AEnemySpawnActor : public AActor
 public:	
 
 	AEnemySpawnActor();
-	
+
 protected:
 
 	virtual void BeginPlay() override;
-
+		
 	UFUNCTION()
     void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -41,6 +41,9 @@ protected:
 	UPROPERTY(EditInstanceOnly)
 	ACastlevaniaCameraActor* CameraActor;
 
+	UPROPERTY(EditAnywhere)
+	bool bAllowSpawnIfLocationIsOffscreen = true;
+			
 	bool bIsSpawning = false;
 	
 	bool bIsTimeStopped = false;
@@ -67,7 +70,7 @@ protected:
 
 	void OnSpawnDurationElapsed();
 
-	virtual void SpawnEnemy(FTransform RelativeTransform);
+	virtual void SpawnEnemy(FTransform Transform);
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AEnemyActor> EnemyClassToSpawn;

@@ -69,10 +69,10 @@ protected:
 	USoundBase* LandSound;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float MaximumAttackTime = 2.0f;
+	float MaximumAttackTime = 3.0f;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float MinimumAttackTime = 0.25f;
+	float MinimumAttackTime = 0.5f;
 
 	UPROPERTY(Transient)
 	ACastlevaniaPawn* Pawn;

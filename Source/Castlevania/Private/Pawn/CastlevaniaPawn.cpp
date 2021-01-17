@@ -6,6 +6,8 @@
 
 #include "Pawn/CastlevaniaPawn.h"
 
+
+#include "CastlevaniaFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Core/CastlevaniaGameInstance.h"
 #include "Core/CastlevaniaGameModeBase.h"
@@ -873,7 +875,7 @@ void ACastlevaniaPawn::OnWhipBeginOverlap(UPrimitiveComponent* OverlappedCompone
 	if(IsValid(Enemy) || IsValid(Spawner) || IsValid(Projectile))
 	{
 		const FVector AverageLocation = (WhipBoxComponent->GetComponentLocation() + OtherActor->GetActorLocation()) / 2.0f;
-		const FVector SpawnLocation = FVector(AverageLocation.X, WhipBoxComponent->GetComponentLocation().Y, AverageLocation.Z);
+		const FVector SpawnLocation = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(AverageLocation.X, WhipBoxComponent->GetComponentLocation().Y, AverageLocation.Z));
 
 		UWorld* World = GetWorld();
 		if(IsValid(World))

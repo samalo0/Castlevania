@@ -33,6 +33,8 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	float GravityAcceleration = -480.0f;
+
+	FVector LocationFloat = FVector::ZeroVector;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float InitialVelocityX = 50.0f;

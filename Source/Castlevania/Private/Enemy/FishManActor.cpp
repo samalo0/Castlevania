@@ -6,7 +6,6 @@
 
 #include "Enemy/FishManActor.h"
 
-
 #include "CastlevaniaFunctionLibrary.h"
 #include "CastlevaniaGameModeBase.h"
 #include "CastlevaniaPawn.h"
@@ -99,6 +98,8 @@ void AFishManActor::Tick(const float DeltaSeconds)
 				FHitResult OutSweepHitResult;
 				if(!SetActorLocation(LocationInteger, true, &OutSweepHitResult))
 				{
+					LocationFloat = GetActorLocation();
+					
 					State = EFishManState::Walking;
 
 					UGameplayStatics::PlaySound2D(this, LandSound);
@@ -130,16 +131,9 @@ void AFishManActor::Tick(const float DeltaSeconds)
 			const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
 			if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 			{
-				FHitResult WalkSweepHitResult;
-				if(!SetActorLocation(LocationInteger, true, &WalkSweepHitResult))
-				{
-					FVector Scale = FlipbookComponent->GetComponentScale();
-					Scale.X *= -1.0f;
-					FlipbookComponent->SetWorldScale3D(Scale);
-					Velocity.X = WalkSpeed * FlipbookComponent->GetComponentScale().X;
-				}
+				SetActorLocation(LocationInteger);
 			}
-
+			
 			RaycastAccumulator += DeltaSeconds;
 			if(RaycastAccumulator >= RaycastInterval)
 			{

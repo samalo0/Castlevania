@@ -26,6 +26,8 @@ public:
 	
 	FVector GetCameraViewportExtent() const;
 
+	bool IsLocationInViewport(FVector Location) const;
+	
 	void SetMinimumAndMaximumX(float MinX, float MaxX);
 	
 protected:
