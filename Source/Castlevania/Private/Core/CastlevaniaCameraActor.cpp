@@ -6,6 +6,8 @@
 
 #include "Core/CastlevaniaCameraActor.h"
 
+
+#include "CastlevaniaFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Camera/CameraComponent.h"
 #include "CastlevaniaGameInstance.h"
@@ -74,21 +76,11 @@ void ACastlevaniaCameraActor::Tick(const float DeltaSeconds)
 	}
 	
 	const FVector PawnLocation = Pawn->GetActorLocation();
-	const FVector CameraLocation = GetActorLocation();
 
-	// For testing.
-	if(bIgnoreMinAndMaxAndTrackPlayer)
+	if(PawnLocation.X >= MinimumX && PawnLocation.X <= MaximumX || bIgnoreMinAndMaxAndTrackPlayer)
 	{
-		const FVector NewLocation = FVector(static_cast<float>(FMath::RoundToInt(PawnLocation.X)), CameraLocation.Y, CameraLocation.Z);
-		if(NewLocation != GetActorLocation())
-		{
-			SetActorLocation(NewLocation);	
-		}
-	}
-	else if(PawnLocation.X >= MinimumX && PawnLocation.X <= MaximumX)
-	{
-		const FVector NewLocation = FVector(static_cast<float>(FMath::RoundToInt(PawnLocation.X)), CameraLocation.Y, CameraLocation.Z);
-		if(NewLocation != GetActorLocation())
+		const FVector NewLocation = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(PawnLocation.X, GetActorLocation().Y, GetActorLocation().Z));
+		if(!GetActorLocation().Equals(NewLocation, 0.99f))
 		{
 			SetActorLocation(NewLocation);	
 		}
