@@ -26,7 +26,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	virtual void HitWithWeapon(int32 Damage, bool bPlaySound) override;
+	virtual void HitWithWeapon(int32 Damage, bool bPlaySound, const FVector WeaponLocation) override;
 
 	virtual void TimeStop(bool bEnable) override;
 	

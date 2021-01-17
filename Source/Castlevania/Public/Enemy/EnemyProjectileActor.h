@@ -14,7 +14,7 @@
 
 class UPaperSpriteComponent;
 
-UCLASS()
+UCLASS(HideCategories = (Replication, Rendering, Actor, Input, LOD, Cooking))
 class CASTLEVANIA_API AEnemyProjectileActor : public AActor
 {
 	GENERATED_BODY()

@@ -12,6 +12,7 @@
 
 class ABurnOutActor;
 class ACastlevaniaCameraActor;
+class AHitEffectActor;
 class AShotPickupActor;
 class AWhipUpgradeActor;
 class UBoxComponent;
@@ -34,10 +35,15 @@ protected:
 	UFUNCTION()
     virtual void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	void SpawnHitEffect(const FVector SpawnLocation);
+	
 	virtual void SpawnPowerup();
 	
 	UPROPERTY(EditInstanceOnly)
 	TSubclassOf<AActor> ClassToSpawnOnDestroy;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AHitEffectActor> HitEffectActorClass;
 	
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* HitSound;

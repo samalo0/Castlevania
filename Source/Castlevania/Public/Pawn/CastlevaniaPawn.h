@@ -13,7 +13,6 @@
 #include "CastlevaniaPawn.generated.h"
 
 class ACastlevaniaGameModeBase;
-class AHitEffectActor;
 class AWeaponActor;
 
 class UBoxComponent;
@@ -370,9 +369,6 @@ public:
 	
 protected:
 	
-	UFUNCTION()
-    void OnWhipBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
 	void UpdateWhipFlipbookAndCollision() const;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "CastlevaniaPawn | Whip")
@@ -386,9 +382,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "CastlevaniaPawn | Whip")
 	UPaperFlipbook* FlipbookShortWhip;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "CastlevaniaPawn | Whip")
-	TSubclassOf<AHitEffectActor> HitEffectActorClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "CastlevaniaPawn | Whip")
 	int32 LeatherWhipActivateCollisionFrame = 2;

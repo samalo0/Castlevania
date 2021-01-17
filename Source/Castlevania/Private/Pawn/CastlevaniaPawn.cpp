@@ -69,8 +69,6 @@ void ACastlevaniaPawn::BeginPlay()
 	DynamicMaterial = CharacterFlipbookComponent->CreateDynamicMaterialInstance(0);
 	
 	CharacterFlipbookComponent->OnFinishedPlaying.AddDynamic(this, &ACastlevaniaPawn::OnFlipbookFinishedPlaying);
-
-	WhipBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ACastlevaniaPawn::OnWhipBeginOverlap);
 	
 	UpdateWhipFlipbookAndCollision();
 }
@@ -864,31 +862,6 @@ int32 ACastlevaniaPawn::GetWhipDamage() const
 	}
 
 	return 2;
-}
-
-void ACastlevaniaPawn::OnWhipBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	AEnemyActor* Enemy = Cast<AEnemyActor>(OtherActor);
-	APowerupSpawnActor* Spawner = Cast<APowerupSpawnActor>(OtherActor);
-	AEnemyProjectileActor* Projectile = Cast<AEnemyProjectileActor>(OtherActor);
-	if(IsValid(Enemy) || IsValid(Spawner) || IsValid(Projectile))
-	{
-		const FVector AverageLocation = (WhipBoxComponent->GetComponentLocation() + OtherActor->GetActorLocation()) / 2.0f;
-		const FVector SpawnLocation = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(AverageLocation.X, WhipBoxComponent->GetComponentLocation().Y, AverageLocation.Z));
-
-		UWorld* World = GetWorld();
-		if(IsValid(World))
-		{
-			FActorSpawnParameters SpawnParameters;
-			SpawnParameters.Instigator = this;
-			SpawnParameters.Owner = this;
-			SpawnParameters.ObjectFlags = RF_Transient;
-			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-			World->SpawnActor<AHitEffectActor>(HitEffectActorClass, SpawnLocation, FRotator::ZeroRotator, SpawnParameters);
-		}
-	}
 }
 
 void ACastlevaniaPawn::SetWhipType(const EWhipType Type)

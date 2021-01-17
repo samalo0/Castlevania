@@ -9,9 +9,9 @@
 #include "Components/BoxComponent.h"
 #include "CastlevaniaCameraActor.h"
 #include "CastlevaniaFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "PaperSpriteComponent.h"
 #include "WeaponActor.h"
-#include "Kismet/GameplayStatics.h"
 
 AEnemyProjectileActor::AEnemyProjectileActor()
 {

@@ -55,11 +55,11 @@ void AFishManActor::BeginPlay()
 	SetActorTickEnabled(true);
 }
 
-void AFishManActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
+void AFishManActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
 	SetActorTickEnabled(false);
 
-	Super::HitWithWeapon(Damage, bPlaySound);
+	Super::HitWithWeapon(Damage, bPlaySound, WeaponLocation);
 }
 
 void AFishManActor::Tick(const float DeltaSeconds)

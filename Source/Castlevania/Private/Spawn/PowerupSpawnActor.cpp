@@ -6,11 +6,13 @@
 
 #include "Spawn/PowerupSpawnActor.h"
 
+#include "Components/BoxComponent.h"
+#include "CastlevaniaFunctionLibrary.h"
 #include "CastlevaniaGameInstance.h"
 #include "CastlevaniaPawn.h"
-#include "ShotPickupActor.h"
-#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Effect/HitEffectActor.h"
+#include "ShotPickupActor.h"
 #include "WeaponActor.h"
 #include "Pickup/WhipUpgradeActor.h"
 
@@ -43,10 +45,29 @@ void APowerupSpawnActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedCompon
 
 		UGameplayStatics::PlaySound2D(this, HitSound);
 
+		const FVector AverageLocation = (OtherComp->GetComponentLocation() + GetActorLocation()) / 2.0f;
+        const FVector SpawnLocation = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(AverageLocation.X, GetActorLocation().Y, AverageLocation.Z));
+		SpawnHitEffect(SpawnLocation);
+		
 		if(IsValid(Weapon))
 		{
 			Weapon->Hit();
 		}
+	}
+}
+
+void APowerupSpawnActor::SpawnHitEffect(const FVector SpawnLocation)
+{
+	UWorld* World = GetWorld();
+	if(IsValid(World))
+	{
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Instigator = nullptr;
+		SpawnParameters.Owner = this;
+		SpawnParameters.ObjectFlags = RF_Transient;
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		World->SpawnActor<AHitEffectActor>(HitEffectActorClass, SpawnLocation, FRotator::ZeroRotator, SpawnParameters);
 	}
 }
 

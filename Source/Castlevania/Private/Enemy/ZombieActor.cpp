@@ -23,11 +23,11 @@ void AZombieActor::BeginPlay()
 	SetActorTickEnabled(true);
 }
 
-void AZombieActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
+void AZombieActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
 	SetActorTickEnabled(false);
 
-	Super::HitWithWeapon(Damage, bPlaySound);
+	Super::HitWithWeapon(Damage, bPlaySound, WeaponLocation);
 }
 
 void AZombieActor::Tick(const float DeltaSeconds)

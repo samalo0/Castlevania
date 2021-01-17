@@ -46,11 +46,11 @@ void AVampireBatActor::BeginPlay()
 	}
 }
 
-void AVampireBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
+void AVampireBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
 	SetActorTickEnabled(false);
 
-	Super::HitWithWeapon(Damage, bPlaySound);
+	Super::HitWithWeapon(Damage, bPlaySound, WeaponLocation);
 }
 
 void AVampireBatActor::OnTriggerBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

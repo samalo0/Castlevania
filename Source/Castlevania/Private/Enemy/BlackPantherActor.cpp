@@ -43,7 +43,7 @@ void ABlackPantherActor::BeginPlay()
 	TriggerBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ABlackPantherActor::OnTriggerBoxBeginOverlap);
 }
 
-void ABlackPantherActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
+void ABlackPantherActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
 	// Disable movement.
 	SetActorTickEnabled(false);
@@ -52,7 +52,7 @@ void ABlackPantherActor::HitWithWeapon(const int32 Damage, const bool bPlaySound
 	SpriteComponent->SetVisibility(false);
 	FlipbookComponent->SetVisibility(true);
 	
-	Super::HitWithWeapon(Damage, bPlaySound);
+	Super::HitWithWeapon(Damage, bPlaySound, WeaponLocation);
 }
 
 void ABlackPantherActor::OnTriggerBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

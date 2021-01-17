@@ -7,16 +7,17 @@
 #include "Enemy/EnemyActor.h"
 
 #include "Components/BoxComponent.h"
-#include "CastlevaniaCameraActor.h"
-#include "CastlevaniaGameInstance.h"
-#include "CastlevaniaGameModeBase.h"
-#include "CastlevaniaPawn.h"
-#include "DrawDebugHelpers.h"
+#include "Core/CastlevaniaCameraActor.h"
+#include "Core/CastlevaniaFunctionLibrary.h"
+#include "Core/CastlevaniaGameInstance.h"
+#include "Core/CastlevaniaGameModeBase.h"
+#include "Pawn/CastlevaniaPawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "Effect/HitEffectActor.h"
 #include "PaperFlipbookComponent.h"
-#include "ShotPickupActor.h"
-#include "WeaponActor.h"
-#include "WhipUpgradeActor.h"
+#include "Pickup/ShotPickupActor.h"
+#include "Weapon/WeaponActor.h"
+#include "Pickup/WhipUpgradeActor.h"
 
 AEnemyActor::AEnemyActor()
 {
@@ -54,7 +55,7 @@ void AEnemyActor::BeginPlay()
 	LocationFloat = GetActorLocation();
 }
 
-void AEnemyActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
+void AEnemyActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
 	UWorld* World = GetWorld();
 	if(!IsValid(World))
@@ -72,7 +73,11 @@ void AEnemyActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
 	{
 		UGameplayStatics::PlaySound2D(this, HitSound);	
 	}
-
+	
+	const FVector AverageLocation = (WeaponLocation + GetActorLocation()) / 2.0f;
+	const FVector SpawnLocation = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(AverageLocation.X, GetActorLocation().Y, AverageLocation.Z));
+	SpawnHitEffect(SpawnLocation);
+	
 	Life -= Damage;
 
 	if(Life <= 0)
@@ -102,7 +107,7 @@ void AEnemyActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	{
 		if(PawnBoxComponent->ComponentHasTag(FName(TEXT("Whip"))))
 		{
-			HitWithWeapon(Pawn->GetWhipDamage(), true);
+			HitWithWeapon(Pawn->GetWhipDamage(), true, PawnBoxComponent->GetComponentLocation());
 
 			bWasHitWithWhip = true;
 		}
@@ -117,7 +122,7 @@ void AEnemyActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	AWeaponActor* Weapon = Cast<AWeaponActor>(OtherActor);
 	if(IsValid(Weapon))
 	{
-		HitWithWeapon(Weapon->GetWeaponDamage(), true);
+		HitWithWeapon(Weapon->GetWeaponDamage(), true, Weapon->GetActorLocation());
 		Weapon->Hit();
 
 		bWasHitWithWhip = false;
@@ -189,3 +194,21 @@ void AEnemyActor::SpawnDrop()
 	}
 }
 
+#pragma region Damaged
+
+void AEnemyActor::SpawnHitEffect(const FVector SpawnLocation)
+{
+	UWorld* World = GetWorld();
+	if(IsValid(World))
+	{
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Instigator = nullptr;
+		SpawnParameters.Owner = this;
+		SpawnParameters.ObjectFlags = RF_Transient;
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		World->SpawnActor<AHitEffectActor>(HitEffectActorClass, SpawnLocation, FRotator::ZeroRotator, SpawnParameters);
+	}
+}
+
+#pragma endregion 

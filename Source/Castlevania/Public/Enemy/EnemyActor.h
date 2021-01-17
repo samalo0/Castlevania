@@ -31,7 +31,7 @@ public:
 
 	FORCEINLINE int32 GetDamageToPlayer() const { return DamageToPlayer; }
 
-	virtual void HitWithWeapon(int32 Damage, bool bPlaySound);
+	virtual void HitWithWeapon(int32 Damage, bool bPlaySound, const FVector WeaponLocation);
 
 protected:
 
@@ -48,13 +48,13 @@ protected:
     virtual void OnFinishedPlaying();
 
 	void SpawnDrop();
-
+	
 	UFUNCTION()
 	virtual void TimeStop(bool bEnable) {}
 
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | General")
 	int32 DamageToPlayer = 2;
-
+	
 	FVector LocationFloat = FVector::ZeroVector;
 	
 #pragma region Components
@@ -72,6 +72,8 @@ protected:
 #pragma region Damaged
 
 protected:
+
+	void SpawnHitEffect(const FVector SpawnLocation);
 	
 	// Flipbook to play when the enemy is destroyed.
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
@@ -84,6 +86,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
 	float HitCooldownTime = 0.25f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")
+	TSubclassOf<AHitEffectActor> HitEffectActorClass;
 	
 	// The amount of damage that the enemy can take before being destroyed.
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | Damaged")

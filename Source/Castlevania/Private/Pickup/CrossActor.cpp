@@ -58,7 +58,7 @@ void ACrossActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 						AEnemyActor* Enemy = Cast<AEnemyActor>(Actor);
 						if(IsValid(Enemy))
 						{
-							Enemy->HitWithWeapon(10, false);
+							Enemy->HitWithWeapon(10, false, Enemy->GetActorLocation());
 						}
 					}
 				}

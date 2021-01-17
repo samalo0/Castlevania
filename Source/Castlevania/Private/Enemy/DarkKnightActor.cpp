@@ -21,9 +21,9 @@ ADarkKnightActor::ADarkKnightActor()
 	Life = 4;
 }
 
-void ADarkKnightActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
+void ADarkKnightActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
-	Super::HitWithWeapon(Damage, bPlaySound);
+	Super::HitWithWeapon(Damage, bPlaySound, WeaponLocation);
 
 	if(Life <= 0)
 	{

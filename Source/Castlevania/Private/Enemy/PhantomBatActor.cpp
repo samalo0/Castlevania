@@ -60,7 +60,7 @@ void APhantomBatActor::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent,
 	}
 }
 
-void APhantomBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
+void APhantomBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
 	UWorld* World = GetWorld();
 	if(!IsValid(World))
@@ -82,6 +82,10 @@ void APhantomBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound)
 	HitCooldown = World->GetTimeSeconds() + HitCooldownTime;
 	
 	UGameplayStatics::PlaySound2D(this, HitSound);
+
+	const FVector AverageLocation = (WeaponLocation + GetActorLocation()) / 2.0f;
+	const FVector SpawnLocation = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(AverageLocation.X, GetActorLocation().Y, AverageLocation.Z));
+	SpawnHitEffect(SpawnLocation);
 
 	int32 EnemyHealth = GameInstance->GetEnemyHealth();
 	EnemyHealth = FMath::Clamp(EnemyHealth - Damage, 0, 16);;
