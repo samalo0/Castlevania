@@ -137,7 +137,7 @@ void APhantomBatActor::Tick(const float DeltaSeconds)
 		break;
 	case EPhantomBatState::MoveToDestination:
 		{
-			LocationFloat = FMath::VInterpConstantTo(GetActorLocation(), Destination, DeltaSeconds, MovementSpeed);
+			LocationFloat = FMath::VInterpConstantTo(LocationFloat, Destination, DeltaSeconds, MovementSpeed);
 			const FVector LocationInteger = UCastlevaniaFunctionLibrary::RoundVectorToInt(LocationFloat);
 			if(!GetActorLocation().Equals(LocationInteger, 0.99f))
 			{
