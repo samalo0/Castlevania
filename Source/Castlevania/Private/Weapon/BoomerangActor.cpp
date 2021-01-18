@@ -131,13 +131,12 @@ void ABoomerangActor::UpdateState(const float DeltaSeconds)
 		break;
 	case EBoomerangState::SpeedingUpLeft:
 		Velocity += TurnAroundAcceleration * DeltaSeconds;
+		
 		if(Velocity <= (InitialInterpolationSpeed * -1.0f))
 		{
 			Velocity = InitialInterpolationSpeed * -1.0f;
 			State = EBoomerangState::FinalGoingLeft;
 		}
-		break;
-	case EBoomerangState::FinalGoingLeft:
 		break;
 	case EBoomerangState::StartGoingLeft:
 		if(LocationFloat.X <= DesiredX || LocationFloat.X <= CameraMinX)
@@ -163,6 +162,7 @@ void ABoomerangActor::UpdateState(const float DeltaSeconds)
 			State = EBoomerangState::FinalGoingRight;
 		}
 		break;		
+	case EBoomerangState::FinalGoingLeft:
 	case EBoomerangState::FinalGoingRight:
 		break;
 	default:

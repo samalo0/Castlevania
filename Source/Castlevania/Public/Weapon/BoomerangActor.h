@@ -69,9 +69,9 @@ protected:
 	EBoomerangState State = EBoomerangState::Idle;
 
 	UPROPERTY(EditDefaultsOnly)
-	float TurnAroundAcceleration = -256.0f;
+	float TurnAroundAcceleration = -512.0f;
 
-	float Velocity = 100.0f;
+	float Velocity = 128.0f;
 	
 #pragma region Components
 

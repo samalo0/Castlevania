@@ -6,7 +6,6 @@
 
 #include "Enemy/DarkKnightActor.h"
 
-
 #include "CastlevaniaFunctionLibrary.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
@@ -74,14 +73,6 @@ void ADarkKnightActor::Tick(const float DeltaSeconds)
 				FlipbookComponent->SetWorldScale3D(FVector(FlipbookComponent->GetComponentScale().X * -1.0f, 1.0f, 1.0f));
 				return;
 			}
-		}
-
-		// Check for randomly turning around.
-		float TurnAround = FMath::FRandRange(0.0f, 1.0f);
-		if(TurnAround <= ProbabilityOfTurningAround)
-		{
-			FlipbookComponent->SetWorldScale3D(FVector(FlipbookComponent->GetComponentScale().X * -1.0f, 1.0f, 1.0f));
-			return;
 		}
 	}
 
