@@ -100,6 +100,45 @@ AActor* ACastlevaniaGameModeBase::ChoosePlayerStart_Implementation(AController* 
 	return Super::ChoosePlayerStart_Implementation(Player);
 }
 
+APawn* ACastlevaniaGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
+{
+	UWorld* World = GetWorld();
+	if(!IsValid(World))
+	{
+		return nullptr;
+	}
+	
+	FTransform SpawnTransform = StartSpot->GetTransform();
+
+	bool bFaceLeft = false;
+	if(SpawnTransform.GetScale3D().X == -1.0f)
+	{
+		bFaceLeft = true;
+		SpawnTransform.SetScale3D(FVector::OneVector);
+	}
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Instigator = GetInstigator();
+	SpawnInfo.ObjectFlags |= RF_Transient;
+	UClass* PawnClass = GetDefaultPawnClassForController(NewPlayer);
+	APawn* ResultPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo);
+	if(!IsValid(ResultPawn))
+	{
+		UE_LOG(LogGameMode, Warning, TEXT("SpawnDefaultPawnFor_Implementation: Couldn't spawn Pawn of type %s at %s"), *GetNameSafe(PawnClass), *SpawnTransform.ToHumanReadableString());
+	}
+
+	if(bFaceLeft)
+	{
+		ACastlevaniaPawn* CastlevaniaPawn = Cast<ACastlevaniaPawn>(ResultPawn);
+		if(IsValid(CastlevaniaPawn))
+		{
+			CastlevaniaPawn->SetFacingDirection(-1.0f);
+		}
+	}
+
+	return ResultPawn;
+}
+
 void ACastlevaniaGameModeBase::StartLevelTransition(const bool bNextStage)
 {
 	UWorld* World = GetWorld();

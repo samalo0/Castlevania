@@ -31,6 +31,8 @@ public:
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	
 	void SetClockActivated(const bool bActive) const { OnClockTimeStop.Broadcast(bActive); }
+
+	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 	
 	void StartLevelTransition(bool bNextStage);
 
