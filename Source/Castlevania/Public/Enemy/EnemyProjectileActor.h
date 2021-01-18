@@ -7,11 +7,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
-#include "PaperFlipbookComponent.h"
 #include "GameFramework/Actor.h"
 #include "EnemyProjectileActor.generated.h"
 
+class UPaperFlipbookComponent;
 class UPaperSpriteComponent;
 
 UCLASS(HideCategories = (Replication, Rendering, Actor, Input, LOD, Cooking))

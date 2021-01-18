@@ -6,8 +6,6 @@
 
 #include "Pawn/CastlevaniaPawn.h"
 
-
-#include "CastlevaniaFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Core/CastlevaniaGameInstance.h"
 #include "Core/CastlevaniaGameModeBase.h"
@@ -15,10 +13,8 @@
 #include "Enemy/EnemyActor.h"
 #include "Enemy/EnemyProjectileActor.h"
 #include "Kismet/GameplayStatics.h"
-#include "Effect/HitEffectActor.h"
 #include "Components/InputComponent.h"
 #include "PaperFlipbookComponent.h"
-#include "Spawn/PowerupSpawnActor.h"
 #include "Weapon/WeaponActor.h"
 
 ACastlevaniaPawn::ACastlevaniaPawn()
@@ -294,7 +290,7 @@ void ACastlevaniaPawn::UpdateAnimationStateMachine()
 
 	if(MovementComponent->bIsOnStairs)
 	{
-		const int GridLocation = FMath::RoundToInt(GetActorLocation().X) % 8;
+		const int GridLocation = FMath::RoundToInt(FMath::Abs(GetActorLocation().X)) % 8;
 		if(GridLocation > 1 && GridLocation < 7)
 		{
 			SetFlipbook(StairsInBetweenFlipbook);
