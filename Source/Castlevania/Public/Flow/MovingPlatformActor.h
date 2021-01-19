@@ -45,7 +45,7 @@ protected:
 	FVector InitialWorldLocation;
 
 	UPROPERTY(Transient, VisibleInstanceOnly)
-	float MaximumVelocity = 16.0f;
+	float MaximumVelocity = 32.0f;
 
 	UPROPERTY(VisibleInstanceOnly)
 	bool bSecondaryIsOnRight = false;

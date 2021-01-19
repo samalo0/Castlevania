@@ -59,6 +59,9 @@ void ADoorActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 		{
 			// Pause timer.
 			GameMode->SetActorTickEnabled(false);
+
+			// Pause spawn/enemies.
+			GameMode->SetClockActivated(true);
 			
 			Pawn->DisableInput(Controller);
 			CameraReference->SetActorTickEnabled(false);
@@ -149,6 +152,9 @@ void ADoorActor::Tick(const float DeltaSeconds)
 						Pawn->EnableInput(Controller);
 
 						CollisionBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+						// Resume spawn/enemies.
+						GameMode->SetClockActivated(false);
 
 						// Continue timer.
 						GameMode->SetActorTickEnabled(true);

@@ -6,6 +6,8 @@
 
 #include "Enemy/MedusaHeadActor.h"
 
+
+#include "PaperFlipbookComponent.h"
 #include "Core/CastlevaniaFunctionLibrary.h"
 #include "Core/CastlevaniaGameModeBase.h"
 #include "Pawn/CastlevaniaPawn.h"
@@ -39,6 +41,20 @@ void AMedusaHeadActor::BeginPlay()
 	
 	InitialLocation = GetActorLocation();
 	SetActorTickEnabled(true);
+}
+
+void AMedusaHeadActor::TimeStop(const bool bEnable)
+{
+	if(bEnable)
+	{
+		FlipbookComponent->SetComponentTickEnabled(false);
+		SetActorTickEnabled(false);	
+	}
+	else
+	{
+		SetActorTickEnabled(true);
+		FlipbookComponent->SetComponentTickEnabled(true);
+	}
 }
 
 void AMedusaHeadActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
