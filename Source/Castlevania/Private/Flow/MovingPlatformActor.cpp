@@ -47,7 +47,8 @@ void AMovingPlatformActor::BeginPlay()
 
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AMovingPlatformActor::OnBoxBeginOverlap);
 	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &AMovingPlatformActor::OnBoxEndOverlap);
-	
+
+	// todo Need to enable/disable tick only when on screen or some other way
 	SetActorTickEnabled(true);
 }
 
