@@ -13,7 +13,7 @@
 class UPaperSprite;
 class UPaperSpriteComponent;
 
-UCLASS()
+UCLASS(HideCategories = (Tick, Replication, Rendering, Actor, Input, LOD, Cooking))
 class CASTLEVANIA_API ACrusherActor : public AActor
 {
 
@@ -22,45 +22,35 @@ class CASTLEVANIA_API ACrusherActor : public AActor
 public:	
 
 	ACrusherActor();
+
+	virtual void Tick(float DeltaSeconds) override;
 	
 protected:
 
 	virtual void BeginPlay() override;
-
-	static void EnableSpriteComponent(bool bEnableNotDisable, UPaperSpriteComponent* Component);
-
-	void IncrementState();
-
-	UPROPERTY(EditDefaultsOnly)
-	UPaperSprite* ArmSprite;
 	
-	UPROPERTY(EditDefaultsOnly)
-	UPaperSprite* BaseSprite;
+	UPROPERTY(VisibleInstanceOnly)
+	FVector LocationFloat;
 	
-	UPROPERTY(EditAnywhere, meta = (ClampMin=1, ClampMax=3))
-	int32 MaximumLower = 3;
-
 	UPROPERTY(EditAnywhere)
+	float LowerVelocity = -32.0f;
+	
+	UPROPERTY(VisibleInstanceOnly)
 	bool bMovingDown = true;
-	
-	UPROPERTY(EditAnywhere)
-	float StateChangeSpeed = 0.5f;
 
-	int32 State = 0;
+	UPROPERTY(EditAnywhere)
+	float RaiseVelocity = 32.0f;
+	
+	UPROPERTY(EditAnywhere, meta = (MakeEditWidget = true))
+	FVector StopRelativeLocation = FVector(0.0f, 0.0f, -48.0f);
 	
 #pragma region Components
 
 	UPROPERTY(VisibleAnywhere)
-	UPaperSpriteComponent* SpriteComponent1;
-
+	USceneComponent* RootSceneComponent;
+	
 	UPROPERTY(VisibleAnywhere)
-	UPaperSpriteComponent* SpriteComponent2;
-
-	UPROPERTY(VisibleAnywhere)
-	UPaperSpriteComponent* SpriteComponent3;
-
-	UPROPERTY(VisibleAnywhere)
-	UPaperSpriteComponent* SpriteComponent4;
+	UPaperSpriteComponent* SpriteComponent;
 	
 #pragma endregion
 	
