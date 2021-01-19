@@ -7,6 +7,7 @@
 #include "Enemy/CrusherActor.h"
 
 #include "CastlevaniaFunctionLibrary.h"
+#include "CastlevaniaPawn.h"
 #include "PaperSpriteComponent.h"
 
 ACrusherActor::ACrusherActor()
@@ -29,9 +30,21 @@ void ACrusherActor::BeginPlay()
 	Super::BeginPlay();
 
 	LocationFloat = SpriteComponent->GetRelativeLocation();
-		
+
+	SpriteComponent->OnComponentBeginOverlap.AddDynamic(this, &ACrusherActor::OnBeginOverlap);
+	
 	// Todo only enable when on screen??
 	SetActorTickEnabled(true);
+}
+
+void ACrusherActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	ACastlevaniaPawn* Pawn = Cast<ACastlevaniaPawn>(OtherActor);
+	if(IsValid(Pawn))
+	{
+		Pawn->TakeDamage(16.0f, FDamageEvent(), nullptr, this);
+	}
 }
 
 void ACrusherActor::Tick(const float DeltaSeconds)
