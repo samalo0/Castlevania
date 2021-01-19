@@ -6,7 +6,9 @@
 
 #include "Enemy/MedusaHeadActor.h"
 
-#include "CastlevaniaFunctionLibrary.h"
+#include "Core/CastlevaniaFunctionLibrary.h"
+#include "Core/CastlevaniaGameModeBase.h"
+#include "Pawn/CastlevaniaPawn.h"
 
 AMedusaHeadActor::AMedusaHeadActor()
 {
@@ -18,6 +20,23 @@ void AMedusaHeadActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UWorld* World = GetWorld();
+	if(IsValid(World))
+	{
+		ACastlevaniaGameModeBase* GameMode = Cast<ACastlevaniaGameModeBase>(World->GetAuthGameMode());
+		if(IsValid(GameMode))
+		{
+			ACastlevaniaPawn* Pawn = GameMode->GetPlayerPawn();
+			if(IsValid(Pawn))
+			{
+				if(Pawn->GetActorLocation().X < GetActorLocation().X)
+				{
+					MovementSpeed *= -1.0f;
+				}
+			}
+		}
+	}
+	
 	InitialLocation = GetActorLocation();
 	SetActorTickEnabled(true);
 }

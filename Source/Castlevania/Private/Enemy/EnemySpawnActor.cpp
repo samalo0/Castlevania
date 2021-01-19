@@ -151,15 +151,37 @@ void AEnemySpawnActor::OnSpawnDurationElapsed()
 		return;
 	}
 
-	const int32 RandomTransformIndex = FMath::RandRange(0, SpawnRelativeTransforms.Num() - 1);	
-	const FTransform RandomTransform = SpawnRelativeTransforms[RandomTransformIndex] * GetActorTransform();
-	
-	if(!bAllowSpawnIfLocationIsOffscreen && !CameraActor->IsLocationInViewport(RandomTransform.GetLocation()))
+	FTransform Transform;
+	switch(SpawnType)
 	{
-		return;
+	case EEnemySpawnType::SpawnAtRelativeLocation:
+		{
+			const int32 RandomTransformIndex = FMath::RandRange(0, SpawnRelativeTransforms.Num() - 1);	
+			Transform = SpawnRelativeTransforms[RandomTransformIndex] * GetActorTransform();
+			if(!CameraActor->IsLocationInViewport(Transform.GetLocation()))
+			{
+				return;
+			}	
+		}
+		break;
+	case EEnemySpawnType::SpawnAtCameraViewportEdge:
+		{
+			Transform = SpawnRelativeTransforms[0] * GetActorTransform();
+			FVector SpawnLocation = Transform.GetLocation();
+			if(GetActorScale().X == -1.0f)
+			{
+				SpawnLocation.X = CameraActor->GetActorLocation().X + CameraActor->GetCameraViewportExtent().X - 1.0f;
+			}
+			else
+			{
+				SpawnLocation.X = CameraActor->GetActorLocation().X - CameraActor->GetCameraViewportExtent().X + 1.0f;
+			}
+			Transform.SetLocation(SpawnLocation);	
+		}
+		break;
 	}
 		
-	SpawnEnemy(RandomTransform);
+	SpawnEnemy(Transform);
 }
 
 void AEnemySpawnActor::SpawnEnemy(const FTransform Transform)

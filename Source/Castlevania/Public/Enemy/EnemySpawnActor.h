@@ -15,6 +15,13 @@ class ACastlevaniaCameraActor;
 class AEnemyActor;
 class UPaperFlipbookComponent;
 
+UENUM()
+enum class EEnemySpawnType : uint8
+{
+	SpawnAtRelativeLocation,
+	SpawnAtCameraViewportEdge,
+};
+
 UCLASS()
 class CASTLEVANIA_API AEnemySpawnActor : public AActor
 {
@@ -40,9 +47,6 @@ protected:
 	
 	UPROPERTY(EditInstanceOnly)
 	ACastlevaniaCameraActor* CameraActor;
-
-	UPROPERTY(EditAnywhere)
-	bool bAllowSpawnIfLocationIsOffscreen = true;
 			
 	bool bIsSpawning = false;
 	
@@ -83,6 +87,11 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float MinimumSpawnTime = 0.25f;
+
+	// Choose enemy spawn type. The relative transform is entirely used, or if you choose camera edge, the X is set to
+	// the viewport edge on the right (if scale is -1) and viewport left (if scale is 1).
+	UPROPERTY(EditAnywhere)
+	EEnemySpawnType SpawnType = EEnemySpawnType::SpawnAtRelativeLocation;
 	
 	FTimerHandle SpawnTimerHandle;
 
