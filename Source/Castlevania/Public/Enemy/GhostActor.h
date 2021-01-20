@@ -28,6 +28,8 @@ public:
 	virtual void HitWithWeapon(int32 Damage, bool bPlaySound, const FVector WeaponLocation) override;
 	
 	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void TimeStop(bool bEnable) override;
 	
 protected:
 

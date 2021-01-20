@@ -70,3 +70,17 @@ void AGhostActor::Tick(const float DeltaSeconds)
 		}
 	}
 }
+
+void AGhostActor::TimeStop(const bool bEnable)
+{
+	if(bEnable)
+	{
+		SetActorTickEnabled(false);
+		FlipbookComponent->Stop();
+	}
+	else 
+	{
+		SetActorTickEnabled(true);
+		FlipbookComponent->Play();
+	}
+}
