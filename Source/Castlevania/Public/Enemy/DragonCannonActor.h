@@ -26,10 +26,14 @@ public:
 
 	ADragonCannonActor();
 
+	virtual void HitWithWeapon(int32 Damage, bool bPlaySound, const FVector WeaponLocation) override;
+	
 protected:
 
 	virtual void BeginPlay() override;
 
+	void PrepareToFire();
+	
 	void RepeatFire();
 	
 	void SpawnProjectile();
@@ -39,7 +43,21 @@ protected:
 	UPROPERTY(Transient)
 	UPaperFlipbook* BlueFlipbook;
 
+	UPROPERTY(EditDefaultsOnly)
+	float DelayBetweenFiring = 3.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float DelayForFirstFire = 0.25f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float DelayForRepeatFire = 0.75f;
+	
 	int32 FireCount = 0;
+
+	bool bFireRight = true;
+	
+	UPROPERTY(EditDefaultsOnly, meta = (MakeEditWidget = true))
+	FTransform LeftSideFireOffset = FTransform(FVector(0.0f, 0.0f, 0.0f));
 	
 	UPROPERTY(EditDefaultsOnly)
 	int32 NumberOfProjectilesToFire = 3;
@@ -53,9 +71,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UPaperFlipbook* RedFlipbook;
 
-	UPROPERTY(EditDefaultsOnly)
-	float RepetitiveFireTime = 1.0f;
-
+	UPROPERTY(EditDefaultsOnly, meta = (MakeEditWidget = true))
+	FTransform RightSideFireOffset = FTransform(FVector(0.0f, 0.0f, 0.0f));
+	
 	UPROPERTY(EditDefaultsOnly)
 	float StartFireTime = 3.0f;
 

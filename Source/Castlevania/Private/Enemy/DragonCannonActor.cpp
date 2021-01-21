@@ -22,15 +22,44 @@ void ADragonCannonActor::BeginPlay()
 	Super::BeginPlay();
 
 	BlueFlipbook = FlipbookComponent->GetFlipbook();
-
+	
 	UWorld* World = GetWorld();
 	if(IsValid(GameMode) && IsValid(World))
 	{
 		Pawn = GameMode->GetPlayerPawn();
 		if(IsValid(Pawn))
 		{
-			World->GetTimerManager().SetTimer(TimerHandle, this, &ADragonCannonActor::StartFire, StartFireTime);
+			World->GetTimerManager().SetTimer(TimerHandle, this, &ADragonCannonActor::PrepareToFire, DelayBetweenFiring);
 		}
+	}
+}
+
+void ADragonCannonActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
+{
+	Super::HitWithWeapon(Damage, bPlaySound, WeaponLocation);
+	
+	if(Life <= 0)
+	{
+		UWorld* World = GetWorld();
+		if(IsValid(World))
+		{
+			World->GetTimerManager().ClearTimer(TimerHandle);
+		}
+	}
+}
+
+void ADragonCannonActor::PrepareToFire()
+{
+	UWorld* World = GetWorld();
+	if(IsValid(World))
+	{
+		if(IsValid(Pawn))
+		{
+			bFireRight = Pawn->GetActorLocation().X > GetActorLocation().X; 
+		}
+		
+		FlipbookComponent->SetFlipbook(RedFlipbook);
+		World->GetTimerManager().SetTimer(TimerHandle, this, &ADragonCannonActor::StartFire, DelayForFirstFire);
 	}
 }
 
@@ -43,7 +72,7 @@ void ADragonCannonActor::RepeatFire()
 		if(FireCount >= NumberOfProjectilesToFire)
 		{
 			FireCount = 0;
-			World->GetTimerManager().SetTimer(TimerHandle, this, &ADragonCannonActor::StartFire, StartFireTime, false);
+			World->GetTimerManager().SetTimer(TimerHandle, this, &ADragonCannonActor::PrepareToFire, DelayBetweenFiring, false);
 		}		
 	}
 }
@@ -61,7 +90,18 @@ void ADragonCannonActor::SpawnProjectile()
 	SpawnParameters.ObjectFlags |= RF_Transient;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	World->SpawnActor<AEnemyProjectileActor>(ProjectileClass, GetActorTransform(), SpawnParameters);
+	FTransform Transform;
+	if(bFireRight)
+	{
+		Transform = RightSideFireOffset * GetActorTransform();
+	}
+	else
+	{
+		// Set to fire left.
+		Transform = LeftSideFireOffset * GetActorTransform();
+		Transform.SetScale3D(FVector(-1.0f, 1.0f, 1.0f));
+	}
+	World->SpawnActor<AEnemyProjectileActor>(ProjectileClass, Transform, SpawnParameters);
 
 	FireCount++;
 }
@@ -71,7 +111,9 @@ void ADragonCannonActor::StartFire()
 	UWorld* World = GetWorld();
 	if(IsValid(World))
 	{
+		FlipbookComponent->SetFlipbook(BlueFlipbook);
+
 		SpawnProjectile();
-		World->GetTimerManager().SetTimer(TimerHandle, this, &ADragonCannonActor::StartFire, RepetitiveFireTime, true);
+		World->GetTimerManager().SetTimer(TimerHandle, this, &ADragonCannonActor::RepeatFire, DelayForRepeatFire, true);
 	}
 }
