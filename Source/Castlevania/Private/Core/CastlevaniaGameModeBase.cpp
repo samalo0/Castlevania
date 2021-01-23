@@ -153,11 +153,21 @@ void ACastlevaniaGameModeBase::StartLevelTransition(const bool bNextStage)
 		return;
 	}
 
+	if(!IsValid(GameInstance))
+	{
+		return;
+	}
+
 	SetActorTickEnabled(false);
 	
 	// Fade out camera
 	Controller->ClientSetCameraFade(true, FColor::Black, FVector2D(0.0f, 1.0f), CameraFadeTime, true, true);
 
+	GameInstance->AddHearts(5);
+	
+	// Reset enemy health.
+	GameInstance->SetEnemyHealth(16);
+		
 	// Delay and load next stage.
 	FTimerHandle TimerHandle;
 	FTimerDelegate Delegate;
@@ -247,8 +257,7 @@ void ACastlevaniaGameModeBase::StartLevelCompletion()
 	SetActorTickEnabled(false);
 
 	GameInstance->AddPlayerHealth(16);
-	GameInstance->SetEnemyHealth(16);
-	
+		
 	AudioComponent->SetSound(LevelCompletionMusic);
 	AudioComponent->OnAudioFinished.AddDynamic(this, &ACastlevaniaGameModeBase::StartLevelCompletion_AfterMusic);
 	AudioComponent->Play();

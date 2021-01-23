@@ -122,7 +122,7 @@ void UCastlevaniaGameInstance::LoadNextStage()
 	{
 		Stage = 0;
 	}
-
+	
 	UGameplayStatics::OpenLevel(this, Stages[Stage].LevelName);
 }
 
