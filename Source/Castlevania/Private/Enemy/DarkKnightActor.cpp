@@ -94,5 +94,14 @@ void ADarkKnightActor::TimeStop(const bool bEnable)
 		return;
 	}
 
-	SetActorTickEnabled(!bEnable);
+	if(bEnable)
+	{
+		FlipbookComponent->Stop();
+        SetActorTickEnabled(false);;	
+	}
+	else
+	{
+		FlipbookComponent->Play();
+		SetActorTickEnabled(true);;
+	}
 }

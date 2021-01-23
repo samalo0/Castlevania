@@ -42,6 +42,7 @@ void AVampireBatActor::BeginPlay()
 	}
 	else
 	{
+		bHanging = true;
 		TriggerBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AVampireBatActor::OnTriggerBoxOverlap);
 	}
 }
@@ -57,12 +58,13 @@ void AVampireBatActor::OnTriggerBoxOverlap(UPrimitiveComponent* OverlappedCompon
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ACastlevaniaPawn* Pawn = Cast<ACastlevaniaPawn>(OtherActor);
-	if(IsValid(Pawn))
+	if(IsValid(Pawn) && !bIsTimeStopped)
 	{
 		TriggerBoxComponent->DestroyComponent();
 		
 		FlipbookComponent->SetFlipbook(FlyingFlipbook);
 		SetMovementBasedOnPlayerLocation();
+		bHanging = false;
 		SetActorTickEnabled(true);
 	}
 }
@@ -107,7 +109,9 @@ void AVampireBatActor::Tick(const float DeltaSeconds)
 
 void AVampireBatActor::TimeStop(const bool bEnable)
 {
-	if(Life <= 0)
+	Super::TimeStop(bEnable);
+	
+	if(Life <= 0 || bHanging)
 	{
 		return;
 	}

@@ -46,6 +46,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	UPaperFlipbook* FlyingFlipbook;
+
+	bool bHanging = false;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float InitialMovementSpeed = 100.0f;
