@@ -46,6 +46,9 @@ protected:
 	UPaperFlipbook* BlueFlipbook;
 
 	UPROPERTY(EditDefaultsOnly)
+	USoundBase* DeathSound;
+	
+	UPROPERTY(EditDefaultsOnly)
 	float DelayBetweenFiring = 3.0f;
 
 	UPROPERTY(EditDefaultsOnly)

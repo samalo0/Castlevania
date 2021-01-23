@@ -10,6 +10,7 @@
 #include "Core/CastlevaniaGameModeBase.h"
 #include "Enemy/EnemyProjectileActor.h"
 #include "PaperFlipbookComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ADragonCannonActor::ADragonCannonActor()
 {
@@ -36,7 +37,12 @@ void ADragonCannonActor::BeginPlay()
 
 void ADragonCannonActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
-	Super::HitWithWeapon(Damage, bPlaySound, WeaponLocation);
+	Super::HitWithWeapon(Damage, Damage < Life, WeaponLocation);
+
+	if(Damage >= Life)
+	{
+		UGameplayStatics::PlaySound2D(this, DeathSound);
+	}
 	
 	if(Life <= 0)
 	{
