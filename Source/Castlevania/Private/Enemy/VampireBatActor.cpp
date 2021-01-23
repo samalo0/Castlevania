@@ -107,6 +107,11 @@ void AVampireBatActor::Tick(const float DeltaSeconds)
 
 void AVampireBatActor::TimeStop(const bool bEnable)
 {
+	if(Life <= 0)
+	{
+		return;
+	}
+		
 	if(bEnable)
 	{
 		SetActorTickEnabled(false);

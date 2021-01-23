@@ -31,6 +31,7 @@ public:
 
 	FORCEINLINE int32 GetDamageToPlayer() const { return DamageToPlayer; }
 
+	UFUNCTION()
 	virtual void HitWithWeapon(int32 Damage, bool bPlaySound, const FVector WeaponLocation);
 
 protected:
@@ -50,12 +51,18 @@ protected:
 	void SpawnDrop();
 	
 	UFUNCTION()
-	virtual void TimeStop(bool bEnable) {}
+	virtual void TimeStop(const bool bIsActive) { bIsTimeStopped = bIsActive; }
 
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyActor | General")
 	int32 DamageToPlayer = 2;
+
+	bool bHolyWaterBurning = false;
+
+	FTimerHandle HolyWaterTimer;
 	
 	FVector LocationFloat = FVector::ZeroVector;
+	
+	bool bIsTimeStopped = false;
 	
 #pragma region Components
 

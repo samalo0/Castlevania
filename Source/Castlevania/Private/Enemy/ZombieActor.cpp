@@ -44,6 +44,11 @@ void AZombieActor::Tick(const float DeltaSeconds)
 
 void AZombieActor::TimeStop(const bool bEnable)
 {
+	if(Life <= 0)
+	{
+		return;
+	}
+		
 	if(bEnable)
 	{
 		SetActorTickEnabled(false);

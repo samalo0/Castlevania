@@ -39,6 +39,8 @@ protected:
 	void SpawnProjectile();
 	
 	void StartFire();
+
+	virtual void TimeStop(const bool bIsActive) override;
 	
 	UPROPERTY(Transient)
 	UPaperFlipbook* BlueFlipbook;

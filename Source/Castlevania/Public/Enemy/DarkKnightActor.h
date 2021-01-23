@@ -28,6 +28,8 @@ public:
 protected:
 
 	virtual void HitWithWeapon(int32 Damage, bool bPlaySound, const FVector WeaponLocation) override;
+
+	virtual void TimeStop(const bool bEnable) override;
 	
 	float Accumulator = 0.0f;
 

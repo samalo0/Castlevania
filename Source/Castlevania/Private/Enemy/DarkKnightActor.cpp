@@ -85,3 +85,14 @@ void ADarkKnightActor::Tick(const float DeltaSeconds)
 	}
 }
 
+void ADarkKnightActor::TimeStop(const bool bEnable)
+{
+	Super::TimeStop(bEnable);
+
+	if(Life <= 0)
+	{
+		return;
+	}
+
+	SetActorTickEnabled(!bEnable);
+}

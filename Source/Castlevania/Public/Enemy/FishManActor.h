@@ -43,8 +43,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void TimeStop(bool bEnable) override;
-
-	void UpdateState(const float DeltaSeconds);
 	
 	float Accumulator = 0.0f;
 

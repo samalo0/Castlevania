@@ -14,6 +14,7 @@
 #include "Pawn/CastlevaniaPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Effect/HitEffectActor.h"
+#include "HolyWaterActor.h"
 #include "PaperFlipbookComponent.h"
 #include "Pickup/ShotPickupActor.h"
 #include "Weapon/WeaponActor.h"
@@ -58,7 +59,7 @@ void AEnemyActor::BeginPlay()
 void AEnemyActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
 	UWorld* World = GetWorld();
-	if(!IsValid(World))
+	if(!IsValid(World) || Life <= 0)
 	{
 		return;
 	}
@@ -126,12 +127,42 @@ void AEnemyActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		Weapon->Hit();
 
 		bWasHitWithWhip = false;
+
+		AHolyWaterActor* HolyWater = Cast<AHolyWaterActor>(OtherActor);
+		if(IsValid(HolyWater))
+		{
+			bHolyWaterBurning = true;
+			TimeStop(true);
+
+			// Set up a timer for repeat holy water damage.
+			UWorld* World = GetWorld();
+			if(IsValid(World))
+			{
+				FTimerDelegate Delegate;
+				Delegate.BindUFunction(this, "HitWithWeapon", HolyWater->GetWeaponDamage(), true, HolyWater->GetActorLocation());
+				World->GetTimerManager().SetTimer(HolyWaterTimer, Delegate, HolyWater->GetRepeatDamageInterval(), true);
+			}
+		}
 	}
 }
 
 void AEnemyActor::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	
+	AHolyWaterActor* HolyWater = Cast<AHolyWaterActor>(OtherActor);
+	if(IsValid(HolyWater))
+	{
+		bHolyWaterBurning = false;
+		TimeStop(false);
+		UWorld* World = GetWorld();
+		if(IsValid(World))
+		{
+			World->GetTimerManager().ClearTimer(HolyWaterTimer);
+		}
+		return;
+	}
+	
 	if(Camera == OtherActor)
 	{
 		Destroy();

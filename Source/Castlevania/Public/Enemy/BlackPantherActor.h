@@ -19,10 +19,7 @@ enum class EBlackPantherState : uint8
 	Idle,
 	Jump,
 	Run,
-
 	Burning,
-	
-	Max UMETA(Hidden)
 };
 
 UCLASS()

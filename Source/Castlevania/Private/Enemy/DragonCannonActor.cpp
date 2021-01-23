@@ -117,3 +117,26 @@ void ADragonCannonActor::StartFire()
 		World->GetTimerManager().SetTimer(TimerHandle, this, &ADragonCannonActor::RepeatFire, DelayForRepeatFire, true);
 	}
 }
+
+void ADragonCannonActor::TimeStop(const bool bIsActive)
+{
+	Super::TimeStop(bIsActive);
+	
+	if(Life <= 0)
+	{
+		return;
+	}
+	
+	UWorld* World = GetWorld();
+	if(IsValid(World))
+	{
+		if(bIsActive)
+		{
+			World->GetTimerManager().PauseTimer(TimerHandle);	
+		}
+		else
+		{
+			World->GetTimerManager().UnPauseTimer(TimerHandle);
+		}
+	}
+}

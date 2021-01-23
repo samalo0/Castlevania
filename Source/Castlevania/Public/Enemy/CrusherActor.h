@@ -31,6 +31,9 @@ protected:
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+    void TimeStop(bool bIsActive);
 	
 	UPROPERTY(VisibleInstanceOnly)
 	FVector LocationFloat;
@@ -46,7 +49,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere, meta = (MakeEditWidget = true))
 	FVector StopRelativeLocation = FVector(0.0f, 0.0f, -48.0f);
-	
+
 #pragma region Components
 
 	UPROPERTY(VisibleAnywhere)

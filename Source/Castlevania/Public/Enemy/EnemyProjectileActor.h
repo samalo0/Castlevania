@@ -41,6 +41,9 @@ protected:
 
 	UFUNCTION()
 	void OnFinishedPlaying();
+
+	UFUNCTION()
+	void TimeStop(bool bIsActive);
 	
 	UPROPERTY(EditDefaultsOnly)
 	int32 DamageToPlayer = 4;

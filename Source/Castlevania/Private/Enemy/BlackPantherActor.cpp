@@ -6,7 +6,6 @@
 
 #include "Enemy/BlackPantherActor.h"
 
-
 #include "CastlevaniaFunctionLibrary.h"
 #include "CastlevaniaPawn.h"
 #include "PaperFlipbookComponent.h"
@@ -46,8 +45,8 @@ void ABlackPantherActor::BeginPlay()
 void ABlackPantherActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
 	// Disable movement.
-	SetActorTickEnabled(false);
 	State = EBlackPantherState::Burning;
+	SetActorTickEnabled(false);
 
 	SpriteComponent->SetVisibility(false);
 	FlipbookComponent->SetVisibility(true);
@@ -59,7 +58,7 @@ void ABlackPantherActor::OnTriggerBoxBeginOverlap(UPrimitiveComponent* Overlappe
                                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ACastlevaniaPawn* Pawn = Cast<ACastlevaniaPawn>(OtherActor);
-	if(IsValid(Pawn))
+	if(IsValid(Pawn) && !bIsTimeStopped)
 	{
 		State = EBlackPantherState::Run;
 
@@ -159,12 +158,19 @@ void ABlackPantherActor::Tick(const float DeltaSeconds)
 
 void ABlackPantherActor::TimeStop(const bool bEnable)
 {
+	Super::TimeStop(bEnable);
+
+	if(State == EBlackPantherState::Burning || State == EBlackPantherState::Idle)
+	{
+		return;
+	}
+	
 	if(bEnable)
 	{
 		SetActorTickEnabled(false);
 		FlipbookComponent->Stop();
 	}
-	else if(State != EBlackPantherState::Idle)
+	else
 	{
 		SetActorTickEnabled(true);
 		FlipbookComponent->Play();

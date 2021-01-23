@@ -8,6 +8,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Core/CastlevaniaCameraActor.h"
+#include "CastlevaniaGameModeBase.h"
 #include "Enemy/EnemyActor.h"
 #include "PaperFlipbookComponent.h"
 
@@ -62,14 +63,24 @@ void AEnemyRespawnActor::BeginPlay()
 		FlipbookComponent->SetComponentTickEnabled(false);	
 	}
 #endif
+
+	UWorld* World = GetWorld();
+	if(IsValid(World))
+	{
+		ACastlevaniaGameModeBase* GameMode = Cast<ACastlevaniaGameModeBase>(World->GetAuthGameMode());
+		if(IsValid(GameMode))
+		{
+			GameMode->OnClockTimeStop.AddDynamic(this, &AEnemyRespawnActor::TimeStop);
+		}
+	}
 }
 
 void AEnemyRespawnActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// Spawn if the reference is bad.
+	// Spawn if the reference is bad and the camera overlaps, as long as time isn't stopped.
 	ACastlevaniaCameraActor* Camera = Cast<ACastlevaniaCameraActor>(OtherActor);
-	if(IsValid(Camera) && !IsValid(EnemyReference))
+	if(IsValid(Camera) && !IsValid(EnemyReference) && !bTimeIsStopped)
 	{
 		SpawnEnemy();
 	}
@@ -89,4 +100,9 @@ void AEnemyRespawnActor::SpawnEnemy()
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			
 	EnemyReference = World->SpawnActor<AEnemyActor>(EnemyActorClass, GetActorTransform(), SpawnParameters);
+}
+
+void AEnemyRespawnActor::TimeStop(const bool bIsActive)
+{
+	bTimeIsStopped = bIsActive;
 }

@@ -62,6 +62,11 @@ void AMedusaHeadActor::Tick(const float DeltaSeconds)
 
 void AMedusaHeadActor::TimeStop(const bool bEnable)
 {
+	if(Life <= 0)
+	{
+		return;
+	}
+	
 	if(bEnable)
 	{
 		FlipbookComponent->SetComponentTickEnabled(false);

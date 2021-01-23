@@ -11,7 +11,6 @@
 #include "CastlevaniaGameInstance.h"
 #include "CastlevaniaGameModeBase.h"
 #include "CastlevaniaPawn.h"
-#include "HolyWaterActor.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -38,28 +37,6 @@ void APhantomBatActor::BeginPlay()
 	FlipbookComponent->SetComponentTickEnabled(false);
 }
 
-void APhantomBatActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, const int32 OtherBodyIndex, const bool bFromSweep, const FHitResult& SweepResult)
-{
-	Super::OnBoxBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-
-	AHolyWaterActor* HolyWater = Cast<AHolyWaterActor>(OtherActor);
-	if(IsValid(HolyWater))
-	{
-		TimeStop(true);
-	}
-}
-
-void APhantomBatActor::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, const int32 OtherBodyIndex)
-{
-	AHolyWaterActor* HolyWater = Cast<AHolyWaterActor>(OtherActor);
-	if(IsValid(HolyWater))
-	{
-		TimeStop(false);
-	}
-}
-
 void APhantomBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
 	UWorld* World = GetWorld();
@@ -73,8 +50,8 @@ void APhantomBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, 
 	{
 		return;
 	}
-	
-	if(World->GetTimeSeconds() < HitCooldown)
+
+	if(World->GetTimeSeconds() < HitCooldown || GameInstance->GetEnemyHealth() <= 0)
 	{
 		return;
 	}

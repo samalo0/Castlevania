@@ -9,7 +9,9 @@
 #include "Components/BoxComponent.h"
 #include "CastlevaniaCameraActor.h"
 #include "CastlevaniaFunctionLibrary.h"
+#include "CastlevaniaGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "PaperFlipbookComponent.h"
 #include "PaperSpriteComponent.h"
 #include "WeaponActor.h"
 
@@ -40,6 +42,16 @@ void AEnemyProjectileActor::BeginPlay()
 	SpriteComponent->OnComponentEndOverlap.AddDynamic(this, &AEnemyProjectileActor::OnEndOverlap);
 
 	LocationFloat = GetActorLocation();
+
+	UWorld* World = GetWorld();
+	if(IsValid(World))
+	{
+		ACastlevaniaGameModeBase* GameMode = Cast<ACastlevaniaGameModeBase>(World->GetAuthGameMode());
+		if(IsValid(GameMode))
+		{
+			GameMode->OnClockTimeStop.AddDynamic(this, &AEnemyProjectileActor::TimeStop);
+		}
+	}
 	
 	SetActorTickEnabled(true);
 }
@@ -106,4 +118,9 @@ void AEnemyProjectileActor::Tick(const float DeltaSeconds)
 	{
 		SetActorLocation(LocationInteger);	
 	}
+}
+
+void AEnemyProjectileActor::TimeStop(const bool bIsActive)
+{
+	SetActorTickEnabled(!bIsActive);
 }

@@ -23,6 +23,8 @@ class CASTLEVANIA_API AHolyWaterActor : public AWeaponActor
 public:
 
 	AHolyWaterActor();
+
+	FORCEINLINE float GetRepeatDamageInterval() const { return RepeatDamageInterval; }
 	
 	virtual void Tick(float DeltaSeconds) override;
 	
@@ -48,6 +50,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FVector InitialVelocity = FVector(50.0f, 0.0f, 100.0f);
 
+	// How long it takes holy water to damage an enemy more than once, if it remains overlapping.
+	UPROPERTY(EditDefaultsOnly)
+	float RepeatDamageInterval = 0.5f;
+	
 	FVector Velocity = FVector::ZeroVector;
 
 #pragma region Components
