@@ -145,6 +145,8 @@ void UCastlevaniaGameInstance::SetStage(const int32 NewStage)
 	{
 		HudWidget->SetStage(Stage + 1);
 	}
+
+	OnStageChanged.Broadcast(Stage);
 }
 
 #pragma endregion

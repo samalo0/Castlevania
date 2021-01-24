@@ -7,6 +7,7 @@
 #include "Enemy/CrusherActor.h"
 
 #include "CastlevaniaFunctionLibrary.h"
+#include "CastlevaniaGameInstance.h"
 #include "CastlevaniaGameModeBase.h"
 #include "CastlevaniaPawn.h"
 #include "PaperSpriteComponent.h"
@@ -42,10 +43,18 @@ void ACrusherActor::BeginPlay()
 		{
 			GameMode->OnClockTimeStop.AddDynamic(this, &ACrusherActor::TimeStop);
 		}
+
+		UCastlevaniaGameInstance* GameInstance = Cast<UCastlevaniaGameInstance>(World->GetGameInstance());
+		if(IsValid(GameInstance))
+		{
+			if(ActiveStage == GameInstance->GetStage())
+			{
+				SetActorTickEnabled(true);
+			}
+
+			GameInstance->OnStageChanged.AddUObject(this, &ACrusherActor::OnStageChanged);
+		}
 	}
-	
-	// Todo only enable when on screen??
-	SetActorTickEnabled(true);
 }
 
 void ACrusherActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -56,6 +65,11 @@ void ACrusherActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		Pawn->TakeDamage(16.0f, FDamageEvent(), nullptr, this);
 	}
+}
+
+void ACrusherActor::OnStageChanged(int32& Stage)
+{
+	SetActorTickEnabled(ActiveStage == Stage);
 }
 
 void ACrusherActor::Tick(const float DeltaSeconds)

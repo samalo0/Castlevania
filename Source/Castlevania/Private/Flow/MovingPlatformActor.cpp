@@ -7,7 +7,8 @@
 #include "Flow/MovingPlatformActor.h"
 
 #include "Components/BoxComponent.h"
-#include "CastlevaniaPawn.h"
+#include "Core/CastlevaniaGameInstance.h"
+#include "Pawn/CastlevaniaPawn.h"
 #include "PaperSpriteComponent.h"
 
 AMovingPlatformActor::AMovingPlatformActor()
@@ -35,6 +36,12 @@ void AMovingPlatformActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UWorld* World = GetWorld();
+	if(!IsValid(World))
+	{
+		return;
+	}
+	
 	InitialWorldLocation = GetActorLocation();
 	
 	SecondaryWorldLocation = (SecondaryRelativeTransform * GetActorTransform()).GetLocation();
@@ -48,8 +55,16 @@ void AMovingPlatformActor::BeginPlay()
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AMovingPlatformActor::OnBoxBeginOverlap);
 	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &AMovingPlatformActor::OnBoxEndOverlap);
 
-	// todo Need to enable/disable tick only when on screen or some other way
-	SetActorTickEnabled(true);
+	UCastlevaniaGameInstance* GameInstance = Cast<UCastlevaniaGameInstance>(World->GetGameInstance());
+	if(IsValid(GameInstance))
+	{
+		if(GameInstance->GetStage() == ActiveStage)
+		{
+			SetActorTickEnabled(true);	
+		}
+
+		GameInstance->OnStageChanged.AddUObject(this, &AMovingPlatformActor::OnStageChanged);
+	}
 }
 
 void AMovingPlatformActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -70,6 +85,11 @@ void AMovingPlatformActor::OnBoxEndOverlap(UPrimitiveComponent* OverlappedCompon
 	{
 		Pawn->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
+}
+
+void AMovingPlatformActor::OnStageChanged(int32& Stage)
+{
+	SetActorTickEnabled(ActiveStage == Stage);
 }
 
 void AMovingPlatformActor::Tick(const float DeltaSeconds)

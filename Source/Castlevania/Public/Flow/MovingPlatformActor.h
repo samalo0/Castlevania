@@ -34,10 +34,17 @@ protected:
 
 	UFUNCTION()
 	void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	void OnStageChanged(int32& Stage);
 	
 	UPROPERTY(Transient, VisibleInstanceOnly)
 	float Acceleration;
 
+	// The stage in which the platform is active. This prevents it from ticking when it is in the world but the player
+	// is not currently at that stage.
+	UPROPERTY(EditInstanceOnly)
+	int32 ActiveStage = 3;
+	
 	UPROPERTY(VisibleInstanceOnly)
 	bool bHeadingRight = false;
 	
@@ -79,3 +86,4 @@ protected:
 #pragma endregion
 	
 };
+

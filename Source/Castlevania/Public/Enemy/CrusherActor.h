@@ -32,8 +32,14 @@ protected:
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	void OnStageChanged(int32& Stage);
+	
 	UFUNCTION()
     void TimeStop(bool bIsActive);
+
+	// The stage in which the crusher is active, to only tick and move during that stage, even when in the world.
+	UPROPERTY(EditInstanceOnly)
+	int32 ActiveStage = 4;
 	
 	UPROPERTY(VisibleInstanceOnly)
 	FVector LocationFloat;
@@ -61,3 +67,4 @@ protected:
 #pragma endregion
 	
 };
+

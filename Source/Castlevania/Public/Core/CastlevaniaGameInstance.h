@@ -13,6 +13,8 @@
 
 class ACastlevaniaPawn;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FCastlevaniaStageChangeSignature, int32&);
+
 USTRUCT()
 struct FStage
 {
@@ -74,9 +76,12 @@ public:
 	void SetWeapon(EWeaponType Type);
 	
 	void SetWhipType(const EWhipType Type) { WhipType = Type; }
+
+	// Delegate which fires when the stage has changed during a level.
+	FCastlevaniaStageChangeSignature OnStageChanged;
 	
 protected:
-
+	
 	int32 EnemyHealth = 16;
 	
 	UPROPERTY(EditDefaultsOnly)
