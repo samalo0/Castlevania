@@ -7,7 +7,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Enemy/EnemyActor.h"
+#include "Enemy/BossEnemyActor.h"
 #include "PhantomBatActor.generated.h"
 
 class ACastlevaniaCameraActor;
@@ -27,7 +27,7 @@ enum class EPhantomBatState
 };
 
 UCLASS()
-class CASTLEVANIA_API APhantomBatActor : public AEnemyActor
+class CASTLEVANIA_API APhantomBatActor : public ABossEnemyActor
 {
 
 	GENERATED_BODY()
@@ -40,11 +40,11 @@ public:
 	
 	virtual void Tick(float DeltaSeconds) override;	
 
+	virtual void TriggerBattle() override;
+	
 protected:
 
 	virtual void BeginPlay() override;
-	
-	virtual void OnFinishedPlaying() override;
 	
 	virtual void TimeStop(bool bEnable) override;
 	

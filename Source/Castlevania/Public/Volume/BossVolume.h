@@ -10,7 +10,7 @@
 #include "GameFramework/Volume.h"
 #include "BossVolume.generated.h"
 
-class AEnemyActor;
+class ABossEnemyActor;
 
 UCLASS()
 class CASTLEVANIA_API ABossVolume : public AVolume
@@ -33,7 +33,7 @@ protected:
 	TArray<AVolume*> BlockingVolumesToEnable;
 
 	UPROPERTY(EditInstanceOnly)
-	AEnemyActor* BossToEnable;
+	ABossEnemyActor* BossToEnable;
 	
 	UPROPERTY(EditInstanceOnly)
 	float CameraMaximumX = 0.0f;

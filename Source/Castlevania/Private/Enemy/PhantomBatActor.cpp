@@ -6,14 +6,13 @@
 
 #include "Enemy/PhantomBatActor.h"
 
+#include "Components/BoxComponent.h"
 #include "CastlevaniaCameraActor.h"
 #include "CastlevaniaFunctionLibrary.h"
 #include "CastlevaniaGameInstance.h"
 #include "CastlevaniaGameModeBase.h"
 #include "CastlevaniaPawn.h"
 #include "PaperFlipbookComponent.h"
-#include "Components/BoxComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 APhantomBatActor::APhantomBatActor()
 {
@@ -39,6 +38,8 @@ void APhantomBatActor::BeginPlay()
 
 void APhantomBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
+	Super::HitWithWeapon(Damage, bPlaySound, WeaponLocation);
+
 	UWorld* World = GetWorld();
 	if(!IsValid(World))
 	{
@@ -50,49 +51,13 @@ void APhantomBatActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, 
 	{
 		return;
 	}
-
-	if(World->GetTimeSeconds() < HitCooldown || GameInstance->GetEnemyHealth() <= 0)
-	{
-		return;
-	}
-
-	HitCooldown = World->GetTimeSeconds() + HitCooldownTime;
 	
-	UGameplayStatics::PlaySound2D(this, HitSound);
-
-	const FVector AverageLocation = (WeaponLocation + GetActorLocation()) / 2.0f;
-	const FVector SpawnLocation = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(AverageLocation.X, GetActorLocation().Y, AverageLocation.Z));
-	SpawnHitEffect(SpawnLocation);
-
-	int32 EnemyHealth = GameInstance->GetEnemyHealth();
-	EnemyHealth = FMath::Clamp(EnemyHealth - Damage, 0, 16);;
-
-	GameInstance->SetEnemyHealth(EnemyHealth);
-	
+	const int32 EnemyHealth = GameInstance->GetEnemyHealth();
 	if(EnemyHealth == 0)
 	{
-		BoxComponent->OnComponentEndOverlap.Clear();
-		BoxComponent->OnComponentBeginOverlap.Clear();
-		BoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
 		State = EPhantomBatState::Death;
 		SetActorTickEnabled(false);
-
-		FlipbookComponent->SetLooping(false);
-		FlipbookComponent->SetFlipbook(BurnOutFlipbook);
-		FlipbookComponent->OnFinishedPlaying.AddDynamic(this, &APhantomBatActor::OnFinishedPlaying);
-		FlipbookComponent->PlayFromStart();
 	}
-}
-
-void APhantomBatActor::OnFinishedPlaying()
-{
-	if(IsValid(GameMode))
-	{
-		GameMode->StartLevelCompletion();
-	}
-
-	Destroy();
 }
 
 void APhantomBatActor::Tick(const float DeltaSeconds)
@@ -101,21 +66,6 @@ void APhantomBatActor::Tick(const float DeltaSeconds)
 	
 	switch(State)
 	{
-	case EPhantomBatState::InitialWait:
-		State = EPhantomBatState::MoveToDestination;
-
-		FlipbookComponent->SetComponentTickEnabled(true);
-		FlipbookComponent->SetFlipbook(FlyingFlipbook);
-		BoxComponent->SetBoxExtent(FlyingCollisionBoxExtent);
-
-		MovementSpeed = SlowMovementSpeed;
-	
-		if(IsValid(Camera))
-		{
-			const FVector CameraLocation = Camera->GetActorLocation();
-			Destination = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(CameraLocation.X, GetActorLocation().Y, CameraLocation.Z));
-		}
-		break;
 	case EPhantomBatState::MoveToDestination:
 		{
 			LocationFloat = FMath::VInterpConstantTo(LocationFloat, Destination, DeltaSeconds, MovementSpeed);
@@ -203,4 +153,23 @@ void APhantomBatActor::TimeStop(const bool bEnable)
 			FlipbookComponent->Play();
 		}	
 	}
+}
+
+void APhantomBatActor::TriggerBattle()
+{
+	State = EPhantomBatState::MoveToDestination;
+
+	FlipbookComponent->SetComponentTickEnabled(true);
+	FlipbookComponent->SetFlipbook(FlyingFlipbook);
+	BoxComponent->SetBoxExtent(FlyingCollisionBoxExtent);
+
+	MovementSpeed = SlowMovementSpeed;
+	
+	if(IsValid(Camera))
+	{
+		const FVector CameraLocation = Camera->GetActorLocation();
+		Destination = UCastlevaniaFunctionLibrary::RoundVectorToInt(FVector(CameraLocation.X, GetActorLocation().Y, CameraLocation.Z));
+	}
+	
+	SetActorTickEnabled(true);
 }

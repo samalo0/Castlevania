@@ -6,10 +6,10 @@
 
 #include "Volume/BossVolume.h"
 
+#include "Enemy/BossEnemyActor.h"
 #include "Components/BrushComponent.h"
 #include "CastlevaniaCameraActor.h"
 #include "CastlevaniaGameModeBase.h"
-#include "EnemyActor.h"
 
 ABossVolume::ABossVolume()
 {
@@ -41,7 +41,7 @@ void ABossVolume::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 		if(IsValid(BossToEnable))
 		{
-			BossToEnable->SetActorTickEnabled(true);
+			BossToEnable->TriggerBattle();
 		}
 
 		UWorld* World = GetWorld();
