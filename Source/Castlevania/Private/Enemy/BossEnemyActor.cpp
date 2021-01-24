@@ -7,10 +7,11 @@
 #include "Enemy/BossEnemyActor.h"
 
 #include "Components/BoxComponent.h"
-#include "CastlevaniaFunctionLibrary.h"
-#include "CastlevaniaGameInstance.h"
-#include "CastlevaniaGameModeBase.h"
+#include "Core/CastlevaniaFunctionLibrary.h"
+#include "Core/CastlevaniaGameInstance.h"
+#include "Core/CastlevaniaGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Weapon/HolyWaterActor.h"
 #include "PaperFlipbookComponent.h"
 
 void ABossEnemyActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
@@ -55,6 +56,22 @@ void ABossEnemyActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, c
 		FlipbookComponent->SetFlipbook(BurnOutFlipbook);
 		FlipbookComponent->OnFinishedPlaying.AddDynamic(this, &ABossEnemyActor::OnFinishedPlaying);
 		FlipbookComponent->PlayFromStart();
+	}
+}
+
+void ABossEnemyActor::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	AHolyWaterActor* HolyWater = Cast<AHolyWaterActor>(OtherActor);
+	if(IsValid(HolyWater))
+	{
+		bHolyWaterBurning = false;
+		TimeStop(false);
+		UWorld* World = GetWorld();
+		if(IsValid(World))
+		{
+			World->GetTimerManager().ClearTimer(HolyWaterTimer);
+		}
 	}
 }
 
