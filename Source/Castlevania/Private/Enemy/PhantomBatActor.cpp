@@ -24,15 +24,6 @@ void APhantomBatActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UWorld* World = GetWorld();
-	if(IsValid(World))
-	{
-		if(IsValid(GameMode))
-		{
-			Pawn = GameMode->GetPlayerPawn();
-		}
-	}
-
 	FlipbookComponent->SetComponentTickEnabled(false);
 }
 

@@ -18,5 +18,35 @@ class CASTLEVANIA_API AMedusaSnakeActor : public AEnemyActor
 {
 
 	GENERATED_BODY()
+
+public:
+
+	AMedusaSnakeActor();
+
+	virtual void HitWithWeapon(int32 Damage, bool bPlaySound, const FVector WeaponLocation) override;
 	
+	virtual void Tick(float DeltaSeconds) override;
+	
+protected:
+
+	virtual void BeginPlay() override;
+
+	bool RaycastToGround(FVector& HitLocation, const float Distance) const;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float FallRaycastInterval = 0.1f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float GravityAcceleration = -480.0f;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float MovementSpeed = 64.0f;
+
+private:
+
+	bool bFalling = false;
+	
+	float FallRaycastAccumulator = 0.0f;
+
+	float VelocityZ = 0.0f;
 };

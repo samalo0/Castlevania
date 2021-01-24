@@ -10,9 +10,6 @@
 #include "Enemy/BossEnemyActor.h"
 #include "PhantomBatActor.generated.h"
 
-class ACastlevaniaCameraActor;
-class ACastlevaniaPawn;
-
 UENUM()
 enum class EPhantomBatState
 {
@@ -68,9 +65,6 @@ protected:
 	float MinimumWaitTime = 0.1f;
 
 	float MovementSpeed = 0.0f;
-	
-	UPROPERTY(Transient)
-	ACastlevaniaPawn* Pawn;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float SlowMovementSpeed = 50.0f;

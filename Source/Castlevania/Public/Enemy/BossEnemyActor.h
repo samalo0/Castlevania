@@ -10,6 +10,8 @@
 #include "Enemy/EnemyActor.h"
 #include "BossEnemyActor.generated.h"
 
+class ACastlevaniaPawn;
+
 /**
  * Child class of enemy for boss enemies.
  */
@@ -29,6 +31,11 @@ public:
 
 protected:
 
+	virtual void BeginPlay() override;
+	
 	virtual void OnFinishedPlaying() override;
+
+	UPROPERTY(Transient)
+	ACastlevaniaPawn* Pawn;
 	
 };

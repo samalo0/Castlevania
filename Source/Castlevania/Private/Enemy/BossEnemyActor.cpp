@@ -14,6 +14,20 @@
 #include "Weapon/HolyWaterActor.h"
 #include "PaperFlipbookComponent.h"
 
+void ABossEnemyActor::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	UWorld* World = GetWorld();
+	if(IsValid(World))
+	{
+		if(IsValid(GameMode))
+		{
+			Pawn = GameMode->GetPlayerPawn();
+		}
+	}
+}
+
 void ABossEnemyActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
 {
 	UWorld* World = GetWorld();

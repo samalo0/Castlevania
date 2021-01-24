@@ -15,7 +15,11 @@ class AMedusaSnakeActor;
 UENUM()
 enum class EMedusaState : uint8
 {
-	WaitingForTrigger,
+	Waiting,
+	MovingToDestination,
+	GetDestinationNearPlayer,
+	GetDestinationAwayFromPlayer,
+	SpawnSnakes,
 };
 
 /**
@@ -38,6 +42,8 @@ public:
 protected:
 
 	void OnBossFightStart();
+
+	void SpawnSnakes(bool bRightSide);
 	
 	UPROPERTY(EditDefaultsOnly)
 	float BossFightDelay = 2.0f;
@@ -48,7 +54,31 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AMedusaSnakeActor> MedusaSnakeClass; 
 
+	UPROPERTY(EditDefaultsOnly)
+	float MaximumMovementDistance = 6 * 16.0f;
+
+	// Speed that medusa can move in pixels/second.
+	UPROPERTY(EditDefaultsOnly)
+	float MovementSpeed = 64.0f;
+		
 	UPROPERTY(VisibleInstanceOnly)
-	EMedusaState State = EMedusaState::WaitingForTrigger;
+	EMedusaState State = EMedusaState::Waiting;
+
+	UPROPERTY(EditDefaultsOnly)
+	FVector2D WaitTimeLimits = FVector2D(0.5f, 2.0f);
+
+	UPROPERTY(EditDefaultsOnly)
+	FVector2D XClamp = FVector2D(-1488.0f, -1272.0f);
+	
+	UPROPERTY(EditDefaultsOnly)
+	FVector2D ZClamp = FVector2D(632.0f - 16.0f, 632.0f + 16.0f);
+	
+private:
+
+	FVector Destination = FVector::ZeroVector;
+
+	bool bLastTowardsPlayer = false;
+	
+	float WaitTime = 0.0f;
 	
 };
