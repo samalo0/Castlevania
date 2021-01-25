@@ -9,6 +9,7 @@
 #include "Components/BoxComponent.h"
 #include "Core/CastlevaniaCameraActor.h"
 #include "Core/CastlevaniaFunctionLibrary.h"
+#include "Core/CastlevaniaGameInstance.h"
 #include "Enemy/MedusaSnakeActor.h"
 #include "PaperFlipbookComponent.h"
 
@@ -19,6 +20,31 @@ AMedusaActor::AMedusaActor()
 	
 	FlipbookComponent->SetHiddenInGame(true);
 	BoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AMedusaActor::HitWithWeapon(const int32 Damage, const bool bPlaySound, const FVector WeaponLocation)
+{
+	Super::HitWithWeapon(Damage, bPlaySound, WeaponLocation);
+
+	UWorld* World = GetWorld();
+	if(!IsValid(World))
+	{
+		return;
+	}
+
+	UCastlevaniaGameInstance* GameInstance = Cast<UCastlevaniaGameInstance>(World->GetGameInstance());
+	if(!IsValid(GameInstance))
+	{
+		return;
+	}
+
+	// Check for triggering death; disable tick to prevent movement after death.
+	const int32 EnemyHealth = GameInstance->GetEnemyHealth();
+	if(EnemyHealth == 0)
+	{
+		State = EMedusaState::Death;
+		SetActorTickEnabled(false);
+	}
 }
 
 void AMedusaActor::OnBossFightStart()
@@ -125,7 +151,7 @@ void AMedusaActor::Tick(const float DeltaSeconds)
 		{
 			SpawnSnakes(Pawn->GetActorLocation().X > GetActorLocation().X);
 
-			if(bLastTowardsPlayer && FVector::Dist(GetActorLocation(), Pawn->GetActorLocation()) < MaximumMovementDistance)
+			if(bLastTowardsPlayer && FMath::Abs(GetActorLocation().X - Pawn->GetActorLocation().X) < MaximumMovementDistance)
 			{
 				State = EMedusaState::GetDestinationAwayFromPlayer;
 			}
@@ -137,6 +163,23 @@ void AMedusaActor::Tick(const float DeltaSeconds)
 		break;
 	default:
 		break;
+	}
+}
+
+void AMedusaActor::TimeStop(const bool bIsActive)
+{
+	if(State != EMedusaState::Waiting && State != EMedusaState::Death)
+	{
+		if(bIsActive)
+		{
+			SetActorTickEnabled(false);
+			FlipbookComponent->Stop();
+		}
+		else 
+		{
+			SetActorTickEnabled(true);
+			FlipbookComponent->Play();
+		}	
 	}
 }
 

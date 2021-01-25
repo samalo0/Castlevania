@@ -55,7 +55,7 @@ protected:
 
 	FTimerHandle LevelCompletionTimerHandle;
 	
-	float LevelTimeFloat = 300.0f;
+	float LevelTimeFloat = 200.0f;
 
 	int32 LevelTimeSeconds = 0;
 

@@ -36,25 +36,35 @@ void ACrusherActor::BeginPlay()
 	SpriteComponent->OnComponentBeginOverlap.AddDynamic(this, &ACrusherActor::OnBeginOverlap);
 
 	UWorld* World = GetWorld();
-	if(IsValid(World))
+	if(!IsValid(World))
 	{
-		ACastlevaniaGameModeBase* GameMode = Cast<ACastlevaniaGameModeBase>(World->GetAuthGameMode());
-		if(IsValid(GameMode))
-		{
-			GameMode->OnClockTimeStop.AddDynamic(this, &ACrusherActor::TimeStop);
-		}
-
-		UCastlevaniaGameInstance* GameInstance = Cast<UCastlevaniaGameInstance>(World->GetGameInstance());
-		if(IsValid(GameInstance))
-		{
-			if(ActiveStage == GameInstance->GetStage())
-			{
-				SetActorTickEnabled(true);
-			}
-
-			GameInstance->OnStageChanged.AddUObject(this, &ACrusherActor::OnStageChanged);
-		}
+		UE_LOG(LogTemp, Error, TEXT("%s unable to get world."), *GetNameSafe(this));
+		return;
 	}
+	
+	ACastlevaniaGameModeBase* GameMode = Cast<ACastlevaniaGameModeBase>(World->GetAuthGameMode());
+	if(!IsValid(GameMode))
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s unable to get game mode."), *GetNameSafe(this));
+		return;
+	}
+
+	UCastlevaniaGameInstance* GameInstance = Cast<UCastlevaniaGameInstance>(World->GetGameInstance());
+	if(!IsValid(GameInstance))
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s unable to get game instance."), *GetNameSafe(this));
+		return;
+	}
+	
+	GameMode->OnClockTimeStop.AddDynamic(this, &ACrusherActor::TimeStop);
+
+	// Enables the crusher if you restart the level at it's stage.
+	if(ActiveStage == GameInstance->GetStage())
+	{
+		SetActorTickEnabled(true);
+	}
+
+	GameInstance->OnStageChanged.AddUObject(this, &ACrusherActor::OnStageChanged);
 }
 
 void ACrusherActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

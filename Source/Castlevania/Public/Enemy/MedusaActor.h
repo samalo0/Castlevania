@@ -20,6 +20,7 @@ enum class EMedusaState : uint8
 	GetDestinationNearPlayer,
 	GetDestinationAwayFromPlayer,
 	SpawnSnakes,
+	Death,
 };
 
 /**
@@ -35,6 +36,8 @@ public:
 
 	AMedusaActor();
 
+	virtual void HitWithWeapon(int32 Damage, bool bPlaySound, const FVector WeaponLocation) override;
+	
 	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void TriggerBattle() override;
@@ -44,6 +47,8 @@ protected:
 	void OnBossFightStart();
 
 	void SpawnSnakes(bool bRightSide);
+
+	virtual void TimeStop(const bool bIsActive) override;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float BossFightDelay = 2.0f;

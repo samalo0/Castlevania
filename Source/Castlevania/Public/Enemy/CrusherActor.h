@@ -39,7 +39,7 @@ protected:
 
 	// The stage in which the crusher is active, to only tick and move during that stage, even when in the world.
 	UPROPERTY(EditInstanceOnly)
-	int32 ActiveStage = 4;
+	int32 ActiveStage = 5;
 	
 	UPROPERTY(VisibleInstanceOnly)
 	FVector LocationFloat;
