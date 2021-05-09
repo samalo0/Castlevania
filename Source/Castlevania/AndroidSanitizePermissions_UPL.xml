@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidManifestUpdates>
+        <removePermission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+        <removePermission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        <removePermission android:name="android.permission.INTERNET" />
+        <removePermission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        <removePermission android:name="com.android.vending.CHECK_LICENSE" />
+        <removePermission android:name="android.permission.ACCESS_WIFI_STATE" />
+        <removePermission android:name="android.permission.VIBRATE" />
+        <removePermission android:name="com.android.vending.BILLING" />
+    </androidManifestUpdates>
+</root>
